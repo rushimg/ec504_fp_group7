@@ -47,9 +47,37 @@ public class Graph {
 				Map.get(index).setPageName(value);
 			else if(parameter.equals("pageURL"))
 				Map.get(index).setPageURL(value);
-			//NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			else
+				System.out.println("Graph Error::Invalid parameter! Node not updated.");
 		}
-		
+	}
+	public void updateNode(int index, String parameter, int value){
+		if(index < 0 || index > currentIndex)
+			System.out.println("Graph Error::Index is out of bounds! Not not updated.");
+		else{
+			if(parameter.equals("pageURL") || parameter.equals("pageName") || parameter.equals("indexed"))
+				System.out.println("Graph Error::Invalid value argument for parameter! Node not updated.");
+			else if(parameter.equals("linkedTo"))
+				Map.get(index).setLinkedTo(value);
+			else if(parameter.equals("HTMLindex"))
+				Map.get(index).setHTMLindex(value);
+			else if(parameter.equals("NodeIndex"))
+				Map.get(index).setNodeIndex(value);
+			else
+				System.out.println("Graph Error::Invalid parameter! Node not updated.");
+		}
+	}
+	public void updateNode(int index, String parameter, boolean value){
+		if(index < 0 || index > currentIndex)
+			System.out.println("Graph Error::Index is out of bounds! Not not updated.");
+		else{
+			if(parameter.equals("NodeIndex") || parameter.equals("HTMLindex") || parameter.equals("linkedTo") || parameter.equals("pageName") || parameter.equals("pageURL"))
+				System.out.println("Graph Error::Invalid value argument for parameter! Node not updated.");
+			else if(parameter.equals("indexed"))
+				Map.get(index).setIndexed(value);
+			else
+				System.out.println("Graph Error::Invalid parameter! Node not updated.");
+		}
 	}
 	
 	
