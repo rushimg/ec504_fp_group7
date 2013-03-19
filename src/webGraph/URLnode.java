@@ -13,6 +13,7 @@ public class URLnode {
 	private int linkedTo;	//number of links to the page
 	private boolean indexed;	//has this node been indexed by a peer
 	
+	public boolean searched;	//used to determine if node has been searched
 	public ArrayList<Integer> LinksTo;	//List of indices pointed to by this node
 	
 	
@@ -28,6 +29,7 @@ public class URLnode {
 		}
 		LinksTo = new ArrayList<Integer>();		
 		indexed = false;
+		searched = false;
 	}
 	
 	/* setNodeIndex
@@ -96,8 +98,8 @@ public class URLnode {
 		return HTMLindex;
 	}
 	
-	/* setHTMLindex
-	 * set the HTML index assuming it is greater than -1
+	/* setLinkedTo
+	 * set linkedTo assuming it is greater than -1
 	 */
 	public void setLinkedTo(int newLinkedTo){
 		if(newLinkedTo > -1)
@@ -108,12 +110,19 @@ public class URLnode {
 		}
 	}
 	
-	/* getHTMLindex
-	 *  get HTMLindex
+	/* getLinkedTo
+	 *  get LinkedTo
 	 */
 	public int getLinkedTo(){
 		return linkedTo;
 	}	
+	
+	/*incLinkedTo
+	 * increments linked to by 1
+	 */
+	public void incLinkedTo(){
+		linkedTo++;
+	}
 	
 	/* setIndexed
 	 * set the indexed bit to show the node has been indexed by a peer

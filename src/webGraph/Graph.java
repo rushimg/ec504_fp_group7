@@ -80,24 +80,66 @@ public class Graph {
 		}
 	}
 	
+	/* addLink
+	 * adds a connection from one node to another. Also increments the page rank of the other page
+	 * 
+	 * @param orignalNode - URL with the link
+	 * @param linkedToNode - end point of the URL	 * 
+	 */
+	public void addLink(int originalNode, int linkedToNode){
+		if(originalNode < 0 || originalNode > currentIndex || linkedToNode < 0 || linkedToNode > currentIndex)
+			System.out.println("Graph Error::originalNode or linkedToNode is out of bounds! Link not added.");		
+		else{
+			Map.get(originalNode).addLink(linkedToNode);
+			Map.get(linkedToNode).incLinkedTo();
+		}
+	}
 	
 	
 	
+	/* treeSearch
+	 * searches the graph based on given parameters
+	 * NOTE:: This is an expensive operation. It should be used as infrequently as possible
+	 * 
+	 * @param parameter - search by pageName or pageURL
+	 * @param value - value assigned to parameter
+	 * 
+	 * @returns index of the node, or -1 if the node is not found
+	 */
+	public int treeSearch(String parameter, String value){
+		if(parameter.equals("pageName")){	//worst possible search
+			int index = DFS_pageName(0,value);	//root is assumed to be at 0
+			return index;			
+		}
+		else if(parameter.equals("pageURL")){	//bit better, but more complicated
+			
+		}
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/* DFS_pageName
+	 * Performs a depth-first search of the tree, searching by pageName
+	 * Will probably take a bajillion years
+	 * 
+	 * @param node - index to current node being searched
+	 * @param pageName - pageName to be matched
+	 */
+	private int DFS_pageName(int node, String pageName){
+		Map.get(node).searched = true;
+		if(Map.get(node).getPageName().equals(pageName) == true)
+			return node;
+		else{
+			for(int ii = 0; ii < Map.get(node).LinksTo.size();ii++){
+				int nextNode = Map.get(Map.get(node).LinksTo.get(ii)).getNodeIndex();
+				int nodeVal = -1;
+				if(Map.get(nextNode).searched == false){
+					nodeVal = DFS_pageName(nextNode,pageName);
+					if(nodeVal != -1)
+						return nodeVal;
+				}
+			}
+			return -1;
+		}		
+	}
 	
 	
 	
