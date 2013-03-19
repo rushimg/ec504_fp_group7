@@ -1,4 +1,5 @@
 package webGraph;
+import stringMatcher.FullFunctionMatching;
 import webGraph.URLnode;
 import java.util.ArrayList;
 
@@ -6,14 +7,14 @@ import java.util.ArrayList;
 public class Graph {
 	private ArrayList<URLnode> Map;		//web map
 	private int currentIndex;	//index of the last added node
-	
+	private FullFunctionMatching strmat;
 	/* Graph - constructor
 	 * initializes Graph
 	 */
 	Graph(){
 		Map = new ArrayList<URLnode>();
 		currentIndex = -1;
-		
+		strmat = new FullFunctionMatching();
 	}
 	
 	
