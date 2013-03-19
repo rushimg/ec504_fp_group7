@@ -1,7 +1,7 @@
 package basicWebCrawler;
 import stringMatcher.FullFunctionMatching;
 
-public class Tester {
+public class CrawlerTester {
 
 		public static void main(String args[]){
 			FullFunctionMatching test = new FullFunctionMatching();
