@@ -14,9 +14,25 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTML.Tag;
+
 
 public class Crawler {
 	
+	// Class Created by Rushi Ganmukhi to Crawl the BU website
+	private String baseURL = "http://www.bu.edu";
+	
+	public Crawler(){
+	}
+	
+    public Tag getLinks(HTML html){
+    	Tag links  = html.getTag("a");
+        return links;       
+    }
+	
+	
+	/*
 	protected ArrayList<String> links;
 	protected HashMap<String,Integer> linkLookup;
 	protected final String storageFile = "storage.txt";
@@ -249,6 +265,6 @@ public class Crawler {
 		
 		
 	}
-	
+	*/
 	
 }	//end class
