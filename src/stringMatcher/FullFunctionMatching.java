@@ -1,4 +1,5 @@
 package stringMatcher;
+import java.util.ArrayList;
 
 public class FullFunctionMatching {
 	
@@ -49,6 +50,7 @@ public class FullFunctionMatching {
 		return temp; //return created string
 	}	//endmethod createString - make a space string
 	
+
 	
 	
 	
@@ -72,6 +74,9 @@ public class FullFunctionMatching {
 		return lowerHalf;	//return changed string
 	}	//endmethod changeCharacter
 	
+	
+	
+	
 	/* change-Characters
 	 * returns a string with a sequence of characters changed to different characters
 	 * 
@@ -93,16 +98,69 @@ public class FullFunctionMatching {
 		return lowerHalf;	//return changed string		
 	}
 	
+	
+	
+	/* removePattern (generic)
+	 * remove the string pattern from string input
+	 * 
+	 * @param input - string from which pattern should be removed
+	 * @param pattern - string which is to be removed from input
+	 * @return input - pattern
+	 */
+	/* removePattern(input,pattern)
+	 * removes all instances of pattern from input
+	 */
+	public String removePattern(String input, String pattern){
+		if(pattern.length() > input.length()){
+			System.out.println("removePatter Error::pattern is longer than input! Returning input unchanged.");
+			return input;
+		}
+		ArrayList<Integer> matches = KMPMatcher(input, pattern);
+		String newString = "";
+		int index = 0;
+		while(index < input.length()){
+			if()//**************************************************************************************************
+		}
+		newString += input.substring(beginIndex, endIndex)
+	}
+	/* removePattern(input, pattern, instances)
+	 * remove the the first instances of pattern from input
+	 * 
+	 * @param instances - number of patterns to remove
+	 */
+	public String removePattern(String input, String pattern, int instances){
+		
+	}
+	/* removePattern(after, input, pattern)
+	 * remove pattern following the "after"th instance
+	 * 
+	 * @param after - begin removing pattern after seeing this many instances 
+	 */
+	public String removePattern(int after, String input, String pattern){
+		
+	}
+	/* removePattern(after, input, pattern, instances
+	 * remove the next x instances of patter after a set amount of instances
+	 * 
+	 * @param after - number of instances to ignore
+	 * @param instances - number of instances to delete
+	 */
+	public String removePattern(int after, String input, String pattern, int instances){
+		
+	}
+	
+	
 	/* KMP Matcher
 	* Performs string matching algorithm as defined in CLRS p.1005
 	* 
 	* @param input - original string
 	* @param pattern - pattern to be found in original string
-	* 
+	* @return arrayList of all matches with given offsets
 	*/
-	private int KMPMatcher(String input, String pattern){
+	private ArrayList<Integer> KMPMatcher(String input, String pattern){
 		int n = input.length();
 		int m = pattern.length();
+		ArrayList<Integer> matches = new ArrayList<Integer>();
 		int[] PI;
 		PI = ComputePrefixFunction(pattern);
 		int q = -1;
@@ -112,12 +170,12 @@ public class FullFunctionMatching {
 			if(pattern.charAt(q+1) == input.charAt(ii))
 				q++;
 			if(q == (m-1)){
-				System.out.println("Pattern occurs with shift " + (ii-(m-1)));
+				matches.add(ii - (m-1));
 				q = PI[q];
 			}
 		}
 		
-		return -1;
+		return matches;
 	}
 	
 	/* Compute-prefix-function
@@ -140,7 +198,6 @@ public class FullFunctionMatching {
 		}
 		return PI;	
 	}
-	
 	
 	
 	
