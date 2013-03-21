@@ -118,7 +118,7 @@ public class Crawler {
 		}
 	}
 	
-	private void grabHTML(String URLin)throws IOException,ClassNotFoundException,FileNotFoundException {
+	public void grabHTML(String URLin)throws IOException,ClassNotFoundException,FileNotFoundException {
 		URL uu = new URL(URLin);
 		InputStream plainStream = uu.openStream();
 		OutputStream out = new FileOutputStream(storageFile);
@@ -133,7 +133,7 @@ public class Crawler {
 		out.close();
 	}
 	
-	private void findLinks()throws IOException{
+	public void findLinks()throws IOException{
 		BufferedReader in = new BufferedReader( new InputStreamReader(new FileInputStream(storageFile)));
 		
 		ArrayList<String> htmlText = new ArrayList<String>();
@@ -197,7 +197,7 @@ public class Crawler {
 		}	
 	}	//end findLinks
 	
-	private boolean checkLink(String newLink){
+	public boolean checkLink(String newLink){
 		if(newLink.length() < 7)
 			return false;
 		String httpCheck = newLink.substring(0, 7);
@@ -229,7 +229,7 @@ public class Crawler {
 		
 	}	//end CheckLink
 	
-	private void printLinks(){
+	public void printLinks(){
 		FileWriter fileWriter = null;
 		try{
 			File linksFile = new File("links.txt");
