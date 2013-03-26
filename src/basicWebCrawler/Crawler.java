@@ -1,79 +1,55 @@
 package basicWebCrawler;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.net.MalformedURLException;
+import java.io.StringWriter;
 import java.net.URL;
-
-import javax.swing.JEditorPane;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.EditorKit;
-import javax.swing.text.ElementIterator;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
-import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.NodeList;
-
-import sun.misc.Queue;
-import sun.net.www.URLConnection;
-
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
-import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
-import com.sun.org.apache.xerces.internal.impl.xs.identity.Selector.Matcher;
-import com.sun.org.apache.xml.internal.utils.DOMBuilder;
-import com.sun.tools.hat.internal.parser.Reader;
-import com.sun.tools.javac.util.List;
-import com.sun.xml.internal.fastinfoset.dom.DOMDocumentParser;
-
-
-public class Crawler extends HTMLEditorKit.ParserCallback{
-	
+public class Crawler {
 	// Class Created by Rushi Ganmukhi to Crawl the BU website
 
 	//constructor 
 	public Crawler(){
+		//TODO: serious cleanup, what vars passed around?
+		//TODO: Actually perform this recursively
 	}
 	
-	
-	//TODO: what do I want this class to input/output?
 	public simpleDS crawl(String url) throws IOException, BadLocationException{
 		BufferedReader br = htmlGrabData(url);
 		simpleDS ds = new simpleDS();
-		this.setSimpleDS(br,ds);
+		this.setSimpleDS(br,ds,url);
 		return ds;
 	}
 	
-	// TODO: passing bufferedReader seems stupid, better way?
 	// function to set the attributes of simpleDS
-	public void setSimpleDS(BufferedReader br,simpleDS ds) throws IOException, BadLocationException{
+	public void setSimpleDS(BufferedReader br,simpleDS ds,String url) throws IOException, BadLocationException{
 	    HTMLEditorKit htmlKit = new HTMLEditorKit();
 	    HTMLDocument htmlDoc = (HTMLDocument) htmlKit.createDefaultDocument();
 	    HTMLEditorKit.Parser parser = new ParserDelegator();
 	    HTMLEditorKit.ParserCallback callback = htmlDoc.getReader(0);
 	    parser.parse(br, callback, true);
+	    
 		ds.setLinks(this.getLinks(htmlDoc));
 		ds.setPageTitle(this.getTitle(htmlDoc));
+		ds.setRawHTML(this.getBody(htmlDoc));
+		ds.setPageURL(url);
+	}
+	
+	// TODO: remove html tabs and newlines in string
+	public String getBody(HTMLDocument htmlDoc) throws BadLocationException, IOException{
+		StringWriter writer = new StringWriter();
+		HTMLEditorKit kit = new HTMLEditorKit();
+		kit.write(writer, htmlDoc, 0, htmlDoc.getLength());
+		String s = writer.toString();
+		return s;
 	}
 	
 	public String getTitle(HTMLDocument htmlDoc){
@@ -83,18 +59,15 @@ public class Crawler extends HTMLEditorKit.ParserCallback{
 	//TODO: Need to check links and append root url if not complete, also check css, etc. links
 	//Code for this method written with the aide of http://www.java2s.com/Code/Java/Swing-JFC/HTMLDocumentDocumentIteratorExample.htm
 	public ArrayList<String> getLinks(HTMLDocument htmlDoc){
-		    
 		    ArrayList<String> links = new ArrayList<String>();
-		  
+		    
 		    for (HTMLDocument.Iterator iterator = htmlDoc.getIterator(HTML.Tag.A); iterator
 		        .isValid(); iterator.next()) {
-		    	
 		      AttributeSet attributes = iterator.getAttributes();
 		      String srcString = (String) attributes
 		          .getAttribute(HTML.Attribute.HREF);
 		      links.add(srcString);
 		    }
-		    
 		    return links;
 	}
 	
@@ -107,22 +80,7 @@ public class Crawler extends HTMLEditorKit.ParserCallback{
 		return br;
 	}
 
-	
-	
 }	
-// String str = "<html><head></head><body><div><a href=\"/explore/research/\">research</a></div></body></html>";
-// InputStream is = new ByteArrayInputStream(str.getBytes());
-	//BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	
-	/*String line;
- while ((line = br.readLine()) != null) {
-		System.out.println(line);
-	}*/
- //Reader stringReader = new StringReader(string);
- //HTMLEditorKit htmlKit = new HTMLEditorKit();
- //HTMLDocument htmlDoc = (HTMLDocument) htmlKit.createDefaultDocument();
- //htmlKit.read(stringReader, htmlDoc, 0);
-
 
 	/*
 	private String baseURL = "http://www.bu.edu";
@@ -220,92 +178,14 @@ public class Crawler extends HTMLEditorKit.ParserCallback{
 			printLinks();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 	}
 	
-	public void grabHTML(String URLin)throws IOException,ClassNotFoundException,FileNotFoundException {
-		URL uu = new URL(URLin);
-		InputStream plainStream = uu.openStream();
-		OutputStream out = new FileOutputStream(storageFile);
-		
-		byte[] buf = new byte[1024];
-		int len;
-		
-		while((len = plainStream.read(buf))> 0){
-			out.write(buf,0,len);
-		}
-		plainStream.close();
-		out.close();
-	}
-	
-	public void findLinks()throws IOException{
-		BufferedReader in = new BufferedReader( new InputStreamReader(new FileInputStream(storageFile)));
-		
-		ArrayList<String> htmlText = new ArrayList<String>();
-		String str;
-		
-		while((str = in.readLine()) != null){
-			htmlText.add(str);
-		}
-		
-		in.close();
-		String newLink = "";
-		for(int line = 0; line < htmlText.size(); line++){
-			String temp = htmlText.get(line);
-			boolean inHREF = false;
-			if(temp != ""){
-				for(int index = 0; index < temp.length();index++){
-					if(inHREF != true){
-						if(temp.charAt(index) == 'h' && index < temp.length() - 5){
-							if(temp.charAt(index+1) == 'r' && temp.charAt(index + 2) == 'e' && temp.charAt(index+3) == 'f'){
-								index += 4;
-								while(index < temp.length() && temp.charAt(index) == ' ')
-									index++;
-								if(temp.charAt(index) == '='){
-									index++;
-									while(index < temp.length() && temp.charAt(index) == ' ')
-										index++;
-									if(temp.charAt(index) == '\"' || temp.charAt(index) == '\''){
-										index++;
-										inHREF = true;
-										newLink = "";
-									}
-								}								
-							}
-						}
-					}
-					else{		//inHREF = true
-						if(temp.charAt(index) == '\'' || temp.charAt(index) == '\"'){
-							inHREF = false;
-							if(newLink.length() < 4 || (newLink.charAt(0) != 'h' || newLink.charAt(1) != 't' ||newLink.charAt(2) != 't' ||newLink.charAt(3) != 'p')){
-								if(rootURL.charAt(rootURL.length() - 1) == '/')
-									newLink = currentPage + newLink;
-								else
-									newLink = currentPage + '/' + newLink;
-							}
-							//System.out.println(newLink);
-							boolean add = checkLink(newLink);
-							if(add == true){
-								linkLookup.put(newLink, 1);
-								links.add(newLink);
-								//System.out.println(newLink);
-							}
-						}
-						else
-							newLink += temp.charAt(index);
-					}
-						
-						
-						
-				}	//end line analysis
-			}	
-		}	
-	}	//end findLinks
+
 	
 	public boolean checkLink(String newLink){
 		if(newLink.length() < 7)
@@ -339,25 +219,5 @@ public class Crawler extends HTMLEditorKit.ParserCallback{
 		
 	}	//end CheckLink
 	
-	public void printLinks(){
-		FileWriter fileWriter = null;
-		try{
-			File linksFile = new File("links.txt");
-			fileWriter = new FileWriter(linksFile);
-			for(int ii = 0; ii < links.size();ii++){
-				String temp = links.get(ii);
-				String content = "Entry " + ii + " Hits = ";
-				content += linkLookup.get(temp);
-				content += " URL = " + temp +"\n";
-				fileWriter.write(content);
-			}
-			fileWriter.close();
-			
-		} catch(IOException ex){
-			System.out.println("File Output Failed!");
-		}
-		
-		
-	}
 	
 }*/	//end class 

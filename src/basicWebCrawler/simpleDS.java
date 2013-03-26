@@ -43,11 +43,11 @@ public class simpleDS {
 	}
 	
 	// Current page url
-	String getPageURL(){
+	public String getPageURL(){
 		return this.pageURL;
 	}
 	
-	void setPageURL(String url){
+	public void setPageURL(String url){
 		this.pageURL = url;
 	}
 }
