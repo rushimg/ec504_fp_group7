@@ -1,10 +1,12 @@
 package basicWebCrawler;
 
+import java.util.ArrayList;
+
 public class simpleDS {
 	// Simple DS created by Rushi Ganmukhi to hold data from the crawler
 	// to be modified later, possible turned into a graph node
 	
-	private String[] Links;
+	private ArrayList<String> Links;
 	private String rawHTML;
 	private String pageTitle;
 	private String pageURL;
@@ -14,11 +16,11 @@ public class simpleDS {
 	}
  
 	// return array of Links from HTML page
-	public String[] getLinksList(){
+	public ArrayList<String> getLinksList(){
 		return this.Links;
 	}
  
-	public void setLinks(String[] Link){
+	public void setLinks(ArrayList<String> Link){
 	   this.Links = Link;
 	}
 	

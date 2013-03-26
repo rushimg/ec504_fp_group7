@@ -3,6 +3,7 @@ package basicWebCrawler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FileInputStream;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.JEditorPane;
@@ -27,23 +29,102 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.NodeList;
 
+import sun.misc.Queue;
 import sun.net.www.URLConnection;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
 import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
 import com.sun.org.apache.xerces.internal.impl.xs.identity.Selector.Matcher;
+import com.sun.org.apache.xml.internal.utils.DOMBuilder;
 import com.sun.tools.hat.internal.parser.Reader;
 import com.sun.tools.javac.util.List;
+import com.sun.xml.internal.fastinfoset.dom.DOMDocumentParser;
 
 
 public class Crawler extends HTMLEditorKit.ParserCallback{
 	
 	// Class Created by Rushi Ganmukhi to Crawl the BU website
+
+	//constructor 
+	public Crawler(){
+	}
+	
+	
+	//TODO: what do I want this class to input/output?
+	public simpleDS crawl(String url) throws IOException, BadLocationException{
+		BufferedReader br = htmlGrabData(url);
+		simpleDS ds = new simpleDS();
+		this.setSimpleDS(br,ds);
+		return ds;
+	}
+	
+	// TODO: passing bufferedReader seems stupid, better way?
+	// function to set the attributes of simpleDS
+	public void setSimpleDS(BufferedReader br,simpleDS ds) throws IOException, BadLocationException{
+	    HTMLEditorKit htmlKit = new HTMLEditorKit();
+	    HTMLDocument htmlDoc = (HTMLDocument) htmlKit.createDefaultDocument();
+	    HTMLEditorKit.Parser parser = new ParserDelegator();
+	    HTMLEditorKit.ParserCallback callback = htmlDoc.getReader(0);
+	    parser.parse(br, callback, true);
+		ds.setLinks(this.getLinks(htmlDoc));
+		ds.setPageTitle(this.getTitle(htmlDoc));
+	}
+	
+	public String getTitle(HTMLDocument htmlDoc){
+	     return  (String) htmlDoc.getProperty(HTMLDocument.TitleProperty); 
+    }
+	
+	//TODO: Need to check links and append root url if not complete, also check css, etc. links
+	//Code for this method written with the aide of http://www.java2s.com/Code/Java/Swing-JFC/HTMLDocumentDocumentIteratorExample.htm
+	public ArrayList<String> getLinks(HTMLDocument htmlDoc){
+		    
+		    ArrayList<String> links = new ArrayList<String>();
+		  
+		    for (HTMLDocument.Iterator iterator = htmlDoc.getIterator(HTML.Tag.A); iterator
+		        .isValid(); iterator.next()) {
+		    	
+		      AttributeSet attributes = iterator.getAttributes();
+		      String srcString = (String) attributes
+		          .getAttribute(HTML.Attribute.HREF);
+		      links.add(srcString);
+		    }
+		    
+		    return links;
+	}
+	
+	public BufferedReader htmlGrabData(String strUrl) throws IOException{
+		URL url = new URL(strUrl);
+	    java.net.URLConnection connection = url.openConnection();
+		InputStream is = connection.getInputStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader br = new BufferedReader(isr);
+		return br;
+	}
+
+	
+	
+}	
+// String str = "<html><head></head><body><div><a href=\"/explore/research/\">research</a></div></body></html>";
+// InputStream is = new ByteArrayInputStream(str.getBytes());
+	//BufferedReader br = new BufferedReader(new InputStreamReader(is));
+	
+	/*String line;
+ while ((line = br.readLine()) != null) {
+		System.out.println(line);
+	}*/
+ //Reader stringReader = new StringReader(string);
+ //HTMLEditorKit htmlKit = new HTMLEditorKit();
+ //HTMLDocument htmlDoc = (HTMLDocument) htmlKit.createDefaultDocument();
+ //htmlKit.read(stringReader, htmlDoc, 0);
+
+
+	/*
 	private String baseURL = "http://www.bu.edu";
 
 	protected ArrayList<String> links;
@@ -279,4 +360,4 @@ public class Crawler extends HTMLEditorKit.ParserCallback{
 		
 	}
 	
-}	//end class
+}*/	//end class 

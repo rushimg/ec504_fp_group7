@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
+
 import java.io.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
@@ -37,24 +39,14 @@ public class TestCrawler {
 	@After
 	public void tearDown() throws Exception {
 	}
-
-	@Test
-	public void testGetURL() {
+	
+	@Test 
+	// TODO: actual unit tests
+	public void testHTML() throws IOException, BadLocationException{
 		Crawler crawl = new Crawler();
-		simpleDS ds = new simpleDS();
-		
-		// to write to html doc
-		/*Reader stringReader = new StringReader("<html><head><here>abc<div>def</div></here></head><title>testTitle</title></html>");
-		HTMLEditorKit htmlKit = new HTMLEditorKit();
-		HTMLDocument htmlDoc = (HTMLDocument) htmlKit.createDefaultDocument();
-		try {
-			htmlKit.read(stringReader, htmlDoc, 0);
-		} catch (Exception e) {
-			assertEquals(0,1);
-		}*/
-		crawl.getTitle("<html><head><here>abc<div>def</div></here></head><title>testTitle</title></html><a href=\"http://www.w3schools.com\">Visit W3Schools</a>",ds);
-		//System.out.print(htmlDoc.toString());
-		assertEquals(ds.getPageTitle(), "testTitle");
+		simpleDS ds = crawl.crawl("http://www.bu.edu/");
+		System.out.println(ds.getLinksList().toString());
+		System.out.println(ds.getPageTitle());
 	}
 
 }
