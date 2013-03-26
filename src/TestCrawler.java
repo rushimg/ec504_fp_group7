@@ -59,17 +59,29 @@ public class TestCrawler {
     
     @Test
     public void testGetLinks() throws IOException, BadLocationException{
-    	   assertEquals("http://www.google.com", (this.testCrawl.getLinks(this.testDoc)).get(0));
+    	   assertEquals("http://www.google.com", (this.testCrawl.getLinks(this.testDoc,"")).get(0));
+    }
+    
+    @Test
+    public void testCheckLinks(){
+    	assertEquals("http://algorithmics.bu.edu/ec504", this.testCrawl.checkLink("ec504", "http://algorithmics.bu.edu/"));
+    	assertEquals("http://algorithmics.bu.edu/ec330", this.testCrawl.checkLink("http://algorithmics.bu.edu/ec330", "http://algorithmics.bu.edu/"));
     }
    
 	@Test 
 	// Functional Test for simple one page crawl
 	public void testFunctionalCrawl() throws IOException, BadLocationException{
-		simpleDS ds = this.testCrawl.crawl("http://people.bu.edu/rushimg/");
-		//System.out.println(ds.getLinksList().toString());
+		simpleDS ds = this.testCrawl.crawl("http://people.bu.edu/rushimg");
+	    //System.out.println(ds.getLinksList().toString());
 		assertEquals("Your Name Home Page",ds.getPageTitle());
-		assertEquals("http://people.bu.edu/rushimg/",ds.getPageURL());
+		assertEquals("http://people.bu.edu/rushimg",ds.getPageURL());
 		//System.out.println(ds.getRawHTML());
+	}
+	
+	@Test 
+	// Should die silently
+	public void testBadURL() throws IOException, BadLocationException{
+		simpleDS ds = this.testCrawl.crawl("http://www.people.bu.edu/rushimg");
 	}
 
 }

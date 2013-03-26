@@ -23,10 +23,27 @@ public class Crawler {
 	}
 	
 	public simpleDS crawl(String url) throws IOException, BadLocationException{
-		BufferedReader br = htmlGrabData(url);
 		simpleDS ds = new simpleDS();
-		this.setSimpleDS(br,ds,url);
+		BufferedReader br = htmlGrabData(url);
+		if (br != null){
+			this.setSimpleDS(br,ds,url);
+		}
 		return ds;
+	}
+	
+	// TODO: close stream on bad url
+	public BufferedReader htmlGrabData(String strUrl){
+		BufferedReader br = null;
+	    try{
+		URL url = new URL(strUrl);
+		java.net.URLConnection connection = url.openConnection();
+		InputStream is = connection.getInputStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		br = new BufferedReader(isr);
+	    }catch(IOException e){
+	    	//die silently on bad url
+	    }
+		return br;
 	}
 	
 	// function to set the attributes of simpleDS
@@ -37,7 +54,7 @@ public class Crawler {
 	    HTMLEditorKit.ParserCallback callback = htmlDoc.getReader(0);
 	    parser.parse(br, callback, true);
 	    
-		ds.setLinks(this.getLinks(htmlDoc));
+		ds.setLinks(this.getLinks(htmlDoc,url));
 		ds.setPageTitle(this.getTitle(htmlDoc));
 		ds.setRawHTML(this.getBody(htmlDoc));
 		ds.setPageURL(url);
@@ -55,10 +72,9 @@ public class Crawler {
 	public String getTitle(HTMLDocument htmlDoc){
 	     return  (String) htmlDoc.getProperty(HTMLDocument.TitleProperty); 
     }
-	
-	//TODO: Need to check links and append root url if not complete, also check css, etc. links
+
 	//Code for this method written with the aide of http://www.java2s.com/Code/Java/Swing-JFC/HTMLDocumentDocumentIteratorExample.htm
-	public ArrayList<String> getLinks(HTMLDocument htmlDoc){
+	public ArrayList<String> getLinks(HTMLDocument htmlDoc, String currentUrl){
 		    ArrayList<String> links = new ArrayList<String>();
 		    
 		    for (HTMLDocument.Iterator iterator = htmlDoc.getIterator(HTML.Tag.A); iterator
@@ -66,22 +82,23 @@ public class Crawler {
 		      AttributeSet attributes = iterator.getAttributes();
 		      String srcString = (String) attributes
 		          .getAttribute(HTML.Attribute.HREF);
-		      links.add(srcString);
+              if (srcString != null){
+            	  srcString = this.checkLink(srcString, currentUrl);
+		          links.add(srcString);
+              }
 		    }
 		    return links;
 	}
 	
-	public BufferedReader htmlGrabData(String strUrl) throws IOException{
-		URL url = new URL(strUrl);
-	    java.net.URLConnection connection = url.openConnection();
-		InputStream is = connection.getInputStream();
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
-		return br;
+	//TODO: More checks?
+	public String checkLink(String link, String base){
+		if (!(link.contains(base))){
+			return base + link;
+		}
+		return link;
 	}
-
+	
 }	
-
 	/*
 	private String baseURL = "http://www.bu.edu";
 
