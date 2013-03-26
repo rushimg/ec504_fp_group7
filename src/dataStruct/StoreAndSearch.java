@@ -20,6 +20,25 @@ public class StoreAndSearch {
 		private int Freq;
 		private int Index;
 	}
+	StoreAndSearch(){
+		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
+		Data dataTest = new Data();	
+		dataTest.Freq = 0;
+		dataTest.Index = 0;
+		String strTest = " ";
+		mapTest.put(strTest,dataTest);
+		for(int i = 0; i < 96; i++){
+			Dic4.add(mapTest);
+		}
+		for(int i = 0; i < 96 * 96; i++){
+			Dic3.add(Dic4);
+		}
+		for(int i = 0; i < 96 * 96 * 96; i++){
+			Dic2.add(Dic3);
+		}
+	}
+
+	
 	
 	/*define method for store */
 	
@@ -29,7 +48,6 @@ public class StoreAndSearch {
 	  int sz=WordStore.length();
 	  Data Info=new Data ();
 	  Data InfoShort=new Data ();
-	  HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 	  if (sz>3) {
 		  C1=WordStore.charAt(0);
 		  C2=WordStore.charAt(1);
@@ -38,10 +56,6 @@ public class StoreAndSearch {
 		  Info.Freq=Freq;
 		  Info.Index=Index;
 		  Map.put(SubStr, Info);
-		  //System.out.println(Map.size());
-		  for(int i = 0; i< 1000; i++){
-			  Dic4.add(mapTest);
-		  }
 		  Dic4.set(C3-C,Map);
 		  Dic3.set(C2-C,Dic4);
 		  Dic2.set(C1-C,Dic3);

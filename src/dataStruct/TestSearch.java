@@ -15,9 +15,9 @@ public class TestSearch {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		StoreAndSearch testData = new StoreAndSearch();
-		testData.Store(data1, 12, 1);
+		testData.Store(data1, 12, 2);
 		int retData1 = testData.Search(data1);
-		//System.out.println(retData1);
+		System.out.println(retData1);
 		
 
 	}
