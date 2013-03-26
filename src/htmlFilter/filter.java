@@ -30,10 +30,13 @@ public class filter {
     /**
      * use several complicated regex expression to filter script, style and html tags
      * 
+     * Notice: regex expressioon of script and style come from http://keml.iteye.com/blog/1617223
+     * 
      * @return - text after filtering
      */
     public String filterToText() {
         String outputStr = inputHTML;
+
         String scriptRegex = "<[\\s]*?script[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?script[\\s]*?>";    //define regex expression of script
         String styleRegex = "<[\\s]*?style[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?style[\\s]*?>";       //define regex expression of style
         String htmlRegex = "<[^>]+>";                                                              //define regex expression of html
@@ -48,7 +51,7 @@ public class filter {
         Matcher styleMatcher = stylePattern.matcher(outputStr);
         outputStr = styleMatcher.replaceAll("");   
 
-        //filter style tags
+        //filter html tags
         Pattern htmlPattern = Pattern.compile(htmlRegex, Pattern.CASE_INSENSITIVE);
         Matcher htmlMatcher = htmlPattern.matcher(outputStr);
         outputStr = htmlMatcher.replaceAll("");    //space problem still needs to be solved, like: E</span>dit >> E dit after parsing
@@ -57,6 +60,9 @@ public class filter {
         outputStr = outputStr.replaceAll("&nbsp;", "");
         outputStr = outputStr.replaceAll("&lt;", "");
         outputStr = outputStr.replaceAll("&copy;", "");
+        
+        //change all the letters to lower case
+        outputStr = outputStr.toLowerCase();
         
         return outputStr;
     }
@@ -82,7 +88,7 @@ public class filter {
     }
     
     /**
-     * parse the filtered text with "space" - DEC 32 in ascii
+     * parse the filtered text to words and their frequencies - still need some optimization
      * 
      * @param filteredText - text to be parsed 
      */

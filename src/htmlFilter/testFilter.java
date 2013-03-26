@@ -10,8 +10,8 @@ import java.net.URL;
  */
 public class testFilter {
     public static void main(String args[]) {
-        //String inputURL = "http://tomcat.bu.edu/ec512/";
-        String inputURL = "http://algorithmics.bu.edu/twiki/bin/view/EC504";
+        String inputURL = "http://www.amazon.com";
+        //String inputURL = "https://github.com";
         //System.out.println(getHTML(inputURL));
         String inputHTML = getHTML(inputURL);
         filter fl = new filter(inputHTML);
