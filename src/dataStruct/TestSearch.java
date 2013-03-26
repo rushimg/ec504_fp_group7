@@ -17,7 +17,7 @@ public class TestSearch {
 		StoreAndSearch testData = new StoreAndSearch();
 		testData.Store(data1, 12, 1);
 		int retData1 = testData.Search(data1);
-		System.out.println(retData1);
+		//System.out.println(retData1);
 		
 
 	}

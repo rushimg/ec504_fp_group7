@@ -38,7 +38,7 @@ public class StoreAndSearch {
 		  Info.Freq=Freq;
 		  Info.Index=Index;
 		  Map.put(SubStr, Info);
-		  System.out.println(Map.size());
+		  //System.out.println(Map.size());
 		  for(int i = 0; i< 1000; i++){
 			  Dic4.add(mapTest);
 		  }
