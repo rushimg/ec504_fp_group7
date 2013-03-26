@@ -9,9 +9,10 @@ import java.net.URL;
  * @author Tong Liu
  */
 public class testFilter {
-    //public static void main(String args[]) {
-        String inputURL = "http://tomcat.bu.edu/ec512/";
-        //System.out.println(getHTML("http://tomcat.bu.edu/ec512/"));
+    public static void main(String args[]) {
+        String inputURL = "http://www.amazon.com";
+        //String inputURL = "https://github.com";
+        //System.out.println(getHTML(inputURL));
         String inputHTML = getHTML(inputURL);
         filter fl = new filter(inputHTML);
         String textFiltered = fl.filterToText();
@@ -20,7 +21,7 @@ public class testFilter {
         fl.printHashMap();
     }
     
-    /**get html text of specified url
+    /**get HTML text of specified url
      * 
      * @param urlStr - url to get HTML text
      * @return - HTML text

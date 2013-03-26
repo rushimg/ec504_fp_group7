@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.text.html.HTML;
 import java.io.*;
@@ -17,6 +18,7 @@ import org.w3c.dom.Element;
 import com.sun.xml.internal.messaging.saaj.soap.impl.ElementFactory;
 
 import basicWebCrawler.Crawler;
+import basicWebCrawler.simpleDS;
 
 public class TestCrawler {
 
@@ -37,13 +39,22 @@ public class TestCrawler {
 	}
 
 	@Test
-	public void testGetLink() {
+	public void testGetURL() {
 		Crawler crawl = new Crawler();
-		//HTML html = new HTML();
-        HTMLDocument html = new HTMLDocument();
-        html.
-         
-		crawl.getLinks(html);
+		simpleDS ds = new simpleDS();
+		
+		// to write to html doc
+		/*Reader stringReader = new StringReader("<html><head><here>abc<div>def</div></here></head><title>testTitle</title></html>");
+		HTMLEditorKit htmlKit = new HTMLEditorKit();
+		HTMLDocument htmlDoc = (HTMLDocument) htmlKit.createDefaultDocument();
+		try {
+			htmlKit.read(stringReader, htmlDoc, 0);
+		} catch (Exception e) {
+			assertEquals(0,1);
+		}*/
+		crawl.getTitle("<html><head><here>abc<div>def</div></here></head><title>testTitle</title></html><a href=\"http://www.w3schools.com\">Visit W3Schools</a>",ds);
+		//System.out.print(htmlDoc.toString());
+		assertEquals(ds.getPageTitle(), "testTitle");
 	}
 
 }

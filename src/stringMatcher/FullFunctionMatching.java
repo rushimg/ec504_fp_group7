@@ -1,6 +1,30 @@
 package stringMatcher;
 import java.util.ArrayList;
 
+
+/*
+ * Function Overview:
+ * 
+ * NOTE: This gives the most explicit definition of each function. There are many overloaded methods that allow you to assume 
+ * 		 values for the given variables
+ * 
+ * 	ArrayList<Integer> KMPMatcher(String input, String pattern)
+ * 		checks if pattern is present in input and returns an arrayList with matching indices
+ * 
+ *  String createString(int length, char character)
+ *		creates a string of size length filled with 'character'
+ *		
+ *  String changeCharacter(String input, int index, char character)
+ *		changes the character in input at location index to character
+ *		
+ *  String changeCharacters(String input, int startIndex, int endIndex, String newSequence)
+ *  	changes the sequence in input that is between startIndex and endIndex to the newSequence. 
+ *  	Sequences need not be of equal length.
+ *  
+ *  String removePattern(int after, String input, String pattern, int instances)
+ *  	Removes pattern from input after seeing 'after' patterns. Keeps removing pattern until it has seen 'instances' patterns.
+ */
+
 public class FullFunctionMatching {
 	
 	
@@ -8,17 +32,7 @@ public class FullFunctionMatching {
 		
 		
 		
-	}
-	
-	
-	
-	//Functionality supported:
-	//
-	public void match(String input,String pattern, String function){
-		KMPMatcher(input,pattern);
-	}
-	
-	
+	}	
 	
 	
 	/* createString
@@ -118,18 +132,56 @@ public class FullFunctionMatching {
 		ArrayList<Integer> matches = KMPMatcher(input, pattern);
 		String newString = "";
 		int index = 0;
+		int arrayIndex = 0;
 		while(index < input.length()){
-			if()//**************************************************************************************************
+			if(index != matches.get(arrayIndex))
+				newString += input.charAt(index++);
+			else{
+				index += pattern.length();
+				arrayIndex++;
+				if(arrayIndex == matches.size()){
+					newString += input.substring(index);
+					break;
+				}
+			}
 		}
-		newString += input.substring(beginIndex, endIndex)
+		return newString;
 	}
 	/* removePattern(input, pattern, instances)
 	 * remove the the first instances of pattern from input
 	 * 
 	 * @param instances - number of patterns to remove
+	 * @note - does not return any indication if there are less instances in the input than specified
 	 */
 	public String removePattern(String input, String pattern, int instances){
+		if(pattern.length() > input.length()){
+			System.out.println("removePattern Error::pattern is longer than input! Returning input unchanged.");
+			return input;
+		}
+		else if(instances <= 0){
+			System.out.println("removePattern Error::number specified for instances is invalid! Returning input unchanged.");
+			return input;
+		}
 		
+		ArrayList<Integer> matches = KMPMatcher(input, pattern);
+		String newString = "";
+		int index = 0;
+		int arrayIndex = 0;
+		int instancesRemoved = 0;
+		while(index < input.length() && instancesRemoved < instances){
+			if(index != matches.get(arrayIndex))
+				newString += input.charAt(index++);
+			else{
+				index += pattern.length();
+				arrayIndex++;
+				instancesRemoved++;
+				if(arrayIndex == matches.size()){
+					newString += input.substring(index);
+					break;
+				}
+			}
+		}
+		return newString;	
 	}
 	/* removePattern(after, input, pattern)
 	 * remove pattern following the "after"th instance
@@ -137,7 +189,37 @@ public class FullFunctionMatching {
 	 * @param after - begin removing pattern after seeing this many instances 
 	 */
 	public String removePattern(int after, String input, String pattern){
+		if(pattern.length() > input.length()){
+			System.out.println("removePattern Error::pattern is longer than input! Returning input unchanged.");
+			return input;
+		}
+		else if(after < 0){
+			System.out.println("removePattern Error::number specified for after is invalid! Returning input unchanged.");
+			return input;
+		}
 		
+		ArrayList<Integer> matches = KMPMatcher(input, pattern);
+		String newString = "";
+		int index = 0;
+		int arrayIndex = 0;
+		int instancesPassed = 0;
+		while(index < input.length()){
+			if(index != matches.get(arrayIndex))
+				newString += input.charAt(index++);
+			else if(instancesPassed < after){
+				newString += input.charAt(index++);
+				instancesPassed++;
+			}
+			else{
+				index += pattern.length();
+				arrayIndex++;
+				if(arrayIndex == matches.size()){
+					newString += input.substring(index);
+					break;
+				}
+			}
+		}
+		return newString;	
 	}
 	/* removePattern(after, input, pattern, instances
 	 * remove the next x instances of patter after a set amount of instances
@@ -146,7 +228,39 @@ public class FullFunctionMatching {
 	 * @param instances - number of instances to delete
 	 */
 	public String removePattern(int after, String input, String pattern, int instances){
+		if(pattern.length() > input.length()){
+			System.out.println("removePattern Error::pattern is longer than input! Returning input unchanged.");
+			return input;
+		}
+		else if(after < 0 || instances <= 0){
+			System.out.println("removePattern Error::number specified for after or instances is invalid! Returning input unchanged.");
+			return input;
+		}
 		
+		ArrayList<Integer> matches = KMPMatcher(input, pattern);
+		String newString = "";
+		int index = 0;
+		int arrayIndex = 0;
+		int instancesPassed = 0;
+		int instancesRemoved = 0;
+		while(index < input.length() && instancesRemoved < instances){
+			if(index != matches.get(arrayIndex))
+				newString += input.charAt(index++);
+			else if(instancesPassed < after){
+				newString += input.charAt(index++);
+				instancesPassed++;
+			}
+			else{
+				index += pattern.length();
+				arrayIndex++;
+				instancesRemoved++;
+				if(arrayIndex == matches.size()){
+					newString += input.substring(index);
+					break;
+				}
+			}
+		}
+		return newString;			
 	}
 	
 	
@@ -157,7 +271,7 @@ public class FullFunctionMatching {
 	* @param pattern - pattern to be found in original string
 	* @return arrayList of all matches with given offsets
 	*/
-	private ArrayList<Integer> KMPMatcher(String input, String pattern){
+	public ArrayList<Integer> KMPMatcher(String input, String pattern){
 		int n = input.length();
 		int m = pattern.length();
 		ArrayList<Integer> matches = new ArrayList<Integer>();

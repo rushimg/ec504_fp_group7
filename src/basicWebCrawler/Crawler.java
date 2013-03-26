@@ -12,27 +12,40 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.URL;
 
+import javax.swing.JEditorPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.ElementIterator;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.NodeList;
+
+import sun.net.www.URLConnection;
+
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Pattern;
+import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
+import com.sun.org.apache.xerces.internal.impl.xs.identity.Selector.Matcher;
+import com.sun.tools.hat.internal.parser.Reader;
+import com.sun.tools.javac.util.List;
 
 
-public class Crawler {
+public class Crawler extends HTMLEditorKit.ParserCallback{
 	
 	// Class Created by Rushi Ganmukhi to Crawl the BU website
 	private String baseURL = "http://www.bu.edu";
-	
-	public Crawler(){
-	}
-	
-    public Tag getLinks(HTML html){
-    	Tag links  = html.getTag("a");
-        return links;       
-    }
-	
-	
-	/*
+
 	protected ArrayList<String> links;
 	protected HashMap<String,Integer> linkLookup;
 	protected final String storageFile = "storage.txt";
@@ -265,6 +278,5 @@ public class Crawler {
 		
 		
 	}
-	*/
 	
 }	//end class

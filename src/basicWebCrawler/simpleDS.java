@@ -7,35 +7,45 @@ public class simpleDS {
 	private String[] Links;
 	private String rawHTML;
 	private String pageTitle;
+	private String pageURL;
 	
 	// constructor
 	public simpleDS(){	 
 	}
  
 	// return array of Links from HTML page
-	String[] getLinksList(){
+	public String[] getLinksList(){
 		return this.Links;
 	}
  
-	void setLinks(String[] Link){
+	public void setLinks(String[] Link){
 	   this.Links = Link;
 	}
 	
 	// return rawHTML
-	String getRawHTML(){
+	public String getRawHTML(){
 		return this.rawHTML; 
 	}
 	
-	void setRawHTML(String html){
+	public void setRawHTML(String html){
 		this.rawHTML = html;
 	}
 	
 	// return page title
-	String getPageTitle(){
+	public String getPageTitle(){
 		return this.pageTitle;
 	}
 	
-	void setPageTitle(String title){
+	public void setPageTitle(String title){
 		this.pageTitle = title;
+	}
+	
+	// Current page url
+	String getPageURL(){
+		return this.pageURL;
+	}
+	
+	void setPageURL(String url){
+		this.pageURL = url;
 	}
 }
