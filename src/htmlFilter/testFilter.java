@@ -1,24 +1,37 @@
 package htmlFilter;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Tong Liu
  */
 public class testFilter {
-    public static void main(String args[]) {
-        String inputURL = "http://www.amazon.com";
-        //String inputURL = "https://github.com";
+    public static void main(String args[]) throws UnsupportedEncodingException, IOException {
+        //String inputURL = "http://algorithmics.bu.edu/twiki/bin/view/EC504";
+        //String inputURL = "http://www.bu.edu/ece";
+        String inputURL = "https://github.com";
         //System.out.println(getHTML(inputURL));
         String inputHTML = getHTML(inputURL);
-        filter fl = new filter(inputHTML);
-        String textFiltered = fl.filterToText();
+        filter fl = new filter();
+        String textFiltered = fl.filterToText(inputHTML);
         //System.out.println(textFiltered);
-        fl.parse(textFiltered);
-        fl.printHashMap();
+        //fl.parse(textFiltered);
+        //fl.printHashMap();
+        System.out.println("string size before compression: " + inputHTML.length());
+        System.out.println(inputHTML);
+        String encodeStr = fl.encode(inputHTML);
+        System.out.println(encodeStr);
+        System.out.println("string size after encoding: " + encodeStr.length());
+        String decodeStr = fl.decode(encodeStr);
+        System.out.println(decodeStr);
+        System.out.println("string size after decoding: " + decodeStr.length());
     }
     
     /**get HTML text of specified url

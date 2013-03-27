@@ -1,30 +1,36 @@
 package htmlFilter;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * 1. filter input HTML text to get useful content text.
  * 2. parse useful text to words and count their frequencies.
- * 3. Use Huffman coding to encode the useful text (after 1,2 work well)
+ * 3. Use GZIP to encode the useful text (after 1,2 work well)
  * 
  * @author Tong Liu
  *
  */
 
 public class filter {
-    private String inputHTML;
     private HashMap<String, Integer> freq = new HashMap<String, Integer>();
     
     /**
      * constructor - initialization
      */
-    filter(String htmlText) {
-        inputHTML = htmlText;
+    filter() {
+        
     }
     
     /**
@@ -32,9 +38,10 @@ public class filter {
      * 
      * Notice: regex expressioon of script and style come from http://keml.iteye.com/blog/1617223
      * 
+     * @param inputHTML - input html text to be filtered
      * @return - text after filtering
      */
-    public String filterToText() {
+    public String filterToText(String inputHTML) {
         String outputStr = inputHTML;
 
         String scriptRegex = "<[\\s]*?script[^>]*?>[\\s\\S]*?<[\\s]*?\\/[\\s]*?script[\\s]*?>";    //define regex expression of script
@@ -60,9 +67,12 @@ public class filter {
         outputStr = outputStr.replaceAll("&nbsp;", "");
         outputStr = outputStr.replaceAll("&lt;", "");
         outputStr = outputStr.replaceAll("&copy;", "");
+        outputStr = outputStr.replaceAll("&amp;", "");
         
         //change all the letters to lower case
         outputStr = outputStr.toLowerCase();
+        outputStr = outputStr.replaceAll("\t","");
+        outputStr = outputStr.replaceAll("\n\r","");
         
         return outputStr;
     }
@@ -78,10 +88,10 @@ public class filter {
             return true;       //is number
         }
         if ((inputChar >= 'a') && (inputChar <= 'z')) {
-            return true;       //is capital letter
+            return true;       //is lower letter
         }
         if ((inputChar >= 'A') && (inputChar <= 'Z')) {
-            return true;       //is lower letter
+            return true;       //is capital letter
         }
         
         return false;
@@ -148,7 +158,49 @@ public class filter {
         return freq;
     }
     
-    public void encode(String input) {
+    /**
+     * encode input string using GZIP (efficiency of huffman is too low)
+     * "ISO-8859-1"
+     * 
+     * @param input - string to be encoded
+     * @return - string after encoding
+     */
+    public String encode(String input) throws UnsupportedEncodingException, IOException {
+        if (input == null) {
+            System.out.println("Input Format Error");
+            return null;
+        }
         
+        ByteArrayOutputStream baos  = new ByteArrayOutputStream();;
+        GZIPOutputStream gos = new GZIPOutputStream(baos);
+        gos.write(input.getBytes());
+        gos.close();
+        
+        return baos.toString("ISO-8859-1");
+    }
+       
+    /**
+     * decode input string using GZIP()
+     * "GBK"
+     * 
+     * @param input - string to be decoded
+     * @return - string after decoding
+     */
+    public String decode(String input) throws UnsupportedEncodingException, IOException {
+        if (input == null) {
+            System.out.println("Input Format Error");
+            return null;
+        }
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayInputStream bais = new ByteArrayInputStream(input.getBytes("ISO-8859-1"));
+        GZIPInputStream gis = new GZIPInputStream(bais);
+        byte[] buffer = new byte[256];
+        int n = 0;
+        while ((n = gis.read(buffer)) >= 0) {
+            baos.write(buffer, 0, n);
+        }
+         
+        return baos.toString("GBK");
     }
 }
