@@ -1,3 +1,4 @@
+package basicWebCrawler;
 import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.StringReader;
@@ -8,8 +9,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import basicWebCrawler.Crawler;
-import basicWebCrawler.simpleDS;
 
 public class TestCrawler {
 	// functional and unit test for testCrawler.
