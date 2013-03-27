@@ -1,6 +1,5 @@
 package basicWebCrawler;
 import java.util.ArrayList;
-import java.util.Queue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,16 +65,23 @@ public class Crawler {
 		ds.setLinks(this.getLinks(htmlDoc,url));
 		ds.setPageTitle(this.getTitle(htmlDoc));
 		ds.setRawHTML(this.getBody(htmlDoc));
+		ds.setRawText(this.getTextBody(htmlDoc));
 		ds.setPageURL(url);
 	}
-	
-	// TODO: remove html tabs and newlines in string
+
 	public String getBody(HTMLDocument htmlDoc) throws BadLocationException, IOException{
 		StringWriter writer = new StringWriter();
 		HTMLEditorKit kit = new HTMLEditorKit();
 		kit.write(writer, htmlDoc, 0, htmlDoc.getLength());
 		String s = writer.toString();
 		return s;
+	}
+	
+	public String getTextBody(HTMLDocument htmlDoc) throws BadLocationException, IOException{
+		StringWriter writer = new StringWriter();
+		HTMLEditorKit kit = new HTMLEditorKit();
+		kit.write(writer, htmlDoc, 0, htmlDoc.getLength());
+		return htmlDoc.getText(0, htmlDoc.getLength());
 	}
 	
 	public String getTitle(HTMLDocument htmlDoc){

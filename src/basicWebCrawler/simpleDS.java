@@ -8,6 +8,7 @@ public class simpleDS {
 	
 	private ArrayList<String> Links;
 	private String rawHTML;
+	private String rawText;
 	private String pageTitle;
 	private String pageURL;
 	
@@ -31,6 +32,15 @@ public class simpleDS {
 	
 	public void setRawHTML(String html){
 		this.rawHTML = html;
+	}
+	
+	// return rawText, no html tags
+	public String getRawText(){
+		return this.rawText; 
+	}
+	
+	public void setRawText(String text){
+		this.rawText = text;
 	}
 	
 	// return page title

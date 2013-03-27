@@ -55,6 +55,12 @@ public class TestCrawler {
     	   assertTrue(this.testCrawl.getBody(this.testDoc).contains("<title>Test Title</title>"));
     	   assertTrue(this.testCrawl.getBody(this.testDoc).contains("the test body"));
     }
+    @Test
+    public void testGetText() throws IOException, BadLocationException{
+    	   assertFalse(this.testCrawl.getTextBody(this.testDoc).contains("<body>"));
+    	   assertFalse(this.testCrawl.getTextBody(this.testDoc).contains("Test Title"));
+    	   assertTrue(this.testCrawl.getTextBody(this.testDoc).contains("the test body"));
+    }
     
     @Test
     public void testGetLinks() throws IOException, BadLocationException{
@@ -80,7 +86,12 @@ public class TestCrawler {
 	@Test 
 	// Should die silently
 	public void testBadURL() throws IOException, BadLocationException{
-		simpleDS ds = this.testCrawl.crawl("http://www.people.bu.edu/rushimg");
+		try{
+		 this.testCrawl.crawl("http://www.people.bu.edu/rushimg");
+		 assertTrue(true);
+		}catch(Exception e){
+			assertTrue(false);
+		}
 	}
 
 }
