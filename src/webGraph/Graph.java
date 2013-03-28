@@ -1,5 +1,7 @@
 package webGraph;
 import stringMatcher.FullFunctionMatching;
+import customJavaFunctionality.Pair;
+import java.util.HashMap;
 import webGraph.URLnode;
 import java.util.ArrayList;
 
@@ -8,6 +10,8 @@ public class Graph {
 	private ArrayList<URLnode> Map;		//web map
 	private int currentIndex;	//index of the last added node
 	private FullFunctionMatching strmat;
+	private HashMap<String,Integer> URLMap;		//maps a URL to an index - used for fast searching
+	private HashMap<String,Integer> NameMap;	//maps a Name to an index - used for fast searching
 	/* Graph - constructor
 	 * initializes Graph
 	 */
@@ -15,6 +19,8 @@ public class Graph {
 		Map = new ArrayList<URLnode>();
 		currentIndex = -1;
 		strmat = new FullFunctionMatching();
+		URLMap = new HashMap<String, Integer>();
+		NameMap = new HashMap<String,Integer>();
 	}
 	
 	
@@ -28,7 +34,35 @@ public class Graph {
 		tempNode.setPageURL(URL);
 		tempNode.setPageName(pageName);
 		Map.add(tempNode);
+		URLMap.put(URL, currentIndex);
+		NameMap.put(pageName, currentIndex);
 		return currentIndex;
+	}
+	
+	/* findNodeURL
+	 * attempts to find a node based on a URL
+	 * 
+	 * @param URL - the URL of the node
+	 * @returns - returns the index to the node if it exists. If it doesn't returns -1
+	 */
+	public int findNodeURL(String URL){
+		if(URLMap.get(URL) == null)
+			return -1;
+		else
+			return URLMap.get(URL);		
+	}
+	
+	/* findNodeName
+	 * attempts to find a node based on a page name
+	 * 
+	 * @param name - the name of the page
+	 * @returns - returns the index to the node if it exists. If it doesn't returns -1
+	 */
+	public int findNodeName(String name){
+		if(NameMap.get(name) == null)
+			return -1;
+		else
+			return NameMap.get(name);		
 	}
 	
 	/* updateNode
@@ -107,13 +141,18 @@ public class Graph {
 	 * 
 	 * @returns index of the node, or -1 if the node is not found
 	 */
-	public int treeSearch(String parameter, String value){
+	private int treeSearch(String parameter, String value){
 		if(parameter.equals("pageName")){	//worst possible search
 			int index = DFS_pageName(0,value);	//root is assumed to be at 0
 			return index;			
 		}
 		else if(parameter.equals("pageURL")){	//bit better, but more complicated
-			
+			//Screw it - I'll finish this if we actually need it.
+			return -1;
+		}
+		else{
+			System.out.println("treeSearch Error::Invalid parameter! Returning -1.");
+			return -1;
 		}
 	}
 	
