@@ -1,41 +1,63 @@
 package basicWebCrawler;
 
+import java.util.ArrayList;
+
 public class simpleDS {
 	// Simple DS created by Rushi Ganmukhi to hold data from the crawler
 	// to be modified later, possible turned into a graph node
 	
-	private String[] Links;
+	private ArrayList<String> Links;
 	private String rawHTML;
+	private String rawText;
 	private String pageTitle;
+	private String pageURL;
 	
 	// constructor
 	public simpleDS(){	 
 	}
  
 	// return array of Links from HTML page
-	String[] getLinksList(){
+	public ArrayList<String> getLinksList(){
 		return this.Links;
 	}
  
-	void setLinks(String[] Link){
+	public void setLinks(ArrayList<String> Link){
 	   this.Links = Link;
 	}
 	
 	// return rawHTML
-	String getRawHTML(){
+	public String getRawHTML(){
 		return this.rawHTML; 
 	}
 	
-	void setRawHTML(String html){
+	public void setRawHTML(String html){
 		this.rawHTML = html;
 	}
 	
+	// return rawText, no html tags
+	public String getRawText(){
+		return this.rawText; 
+	}
+	
+	public void setRawText(String text){
+		this.rawText = text;
+	}
+	
 	// return page title
-	String getPageTitle(){
+	public String getPageTitle(){
 		return this.pageTitle;
 	}
 	
-	void setPageTitle(String title){
+	public void setPageTitle(String title){
 		this.pageTitle = title;
+	}
+	
+	// Current page url
+	public String getPageURL(){
+		return this.pageURL;
+	}
+	
+	public void setPageURL(String url){
+		this.pageURL = url;
 	}
 }

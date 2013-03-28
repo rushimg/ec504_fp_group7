@@ -1,9 +1,10 @@
 package dataStruct;
 
 import java.util.*;
+import java.io.*;
 
-import DS.StroreAndSearch.Data;
-public class StroreAndSearch {
+//import DS.StroreAndSearch.Data;
+public class StoreAndSearch {
 	/* define data type*/
 	//private String WordStore,WordSearch;
 	private char C1,C2,C3,C4,C5,C6; 
@@ -19,31 +20,51 @@ public class StroreAndSearch {
 		private int Freq;
 		private int Index;
 	}
+	StoreAndSearch(){
+		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
+		Data dataTest = new Data();	
+		dataTest.Freq = 0;
+		dataTest.Index = 0;
+		String strTest = " ";
+		mapTest.put(strTest,dataTest);
+		for(int i = 0; i < 96; i++){
+			Dic4.add(mapTest);
+		}
+		for(int i = 0; i < 96 * 96; i++){
+			Dic3.add(Dic4);
+		}
+		for(int i = 0; i < 96 * 96 * 96; i++){
+			Dic2.add(Dic3);
+		}
+	}
+
+	
 	
 	/*define method for store */
 	
-   public void Store(String WordStore,int Freq,int Index){
+   public void Store(String WordStore,int Freq,int Index) throws IOException {
 	   
 	  String SubStr;
 	  int sz=WordStore.length();
 	  Data Info=new Data ();
 	  Data InfoShort=new Data ();
-	 if (sz>3){
-	  C1=WordStore.charAt(0);
-	  C2=WordStore.charAt(1);
-	  C3=WordStore.charAt(2);
-	  SubStr=WordStore.substring(2,sz-1);
-	
-	  Info.Freq=Freq;
-	  Info.Index=Index;
-	  Map.put(SubStr, Info);
-	  Dic4.set(C3-C,Map);
-	  Dic3.set(C2-C,Dic4);
-	  Dic2.set(C1-C,Dic3);}
+	  if (sz>3) {
+		  C1=WordStore.charAt(0);
+		  C2=WordStore.charAt(1);
+		  C3=WordStore.charAt(2);
+		  SubStr=WordStore.substring(3,sz);
+		  Info.Freq=Freq;
+		  Info.Index=Index;
+		  Map.put(SubStr, Info);
+		  Dic4.set(C3-C,Map);
+		  Dic3.set(C2-C,Dic4);
+		  Dic2.set(C1-C,Dic3);
+	  }
 	 else {
 		  InfoShort.Freq=Freq;
 	       InfoShort.Index=Index;
-		 MapShort.put(WordStore,InfoShort);}
+		 MapShort.put(WordStore,InfoShort);
+	 }
    }
 	
 	/*define method for search*/
@@ -53,13 +74,13 @@ public class StroreAndSearch {
 		  int sz=WordSearch.length();
 		  int IndexReturn=0;
 		  if(sz>3){
-		  SubStr=WordSearch.substring(2,sz-1);
-		  C4=WordSearch.charAt(0);
-		  C5=WordSearch.charAt(1);
-		  C6=WordSearch.charAt(2);
-		  if(Dic2.get(C4-C).get(C5-C).get(C6-C).get(SubStr)!=null)   
-		  IndexReturn=Dic2.get(C4-C).get(C5-C).get(C6-C).get(SubStr).Index;
-		     else System.out.println("Search failed, please try another word");
+			  SubStr=WordSearch.substring(3,sz);
+			  C4=WordSearch.charAt(0);
+			  C5=WordSearch.charAt(1);
+			  C6=WordSearch.charAt(2);
+			  if(Dic2.get(C4-C).get(C5-C).get(C6-C).get(SubStr)!=null)   
+				  IndexReturn=Dic2.get(C4-C).get(C5-C).get(C6-C).get(SubStr).Index;
+			  else System.out.println("Search failed, please try another word");
 		  }
 		  else {
 			  if(MapShort.containsKey(WordSearch))
