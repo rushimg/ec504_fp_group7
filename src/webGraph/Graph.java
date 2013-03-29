@@ -12,6 +12,8 @@ public class Graph {
 	private FullFunctionMatching strmat;
 	private HashMap<String,Integer> URLMap;		//maps a URL to an index - used for fast searching
 	private HashMap<String,Integer> NameMap;	//maps a Name to an index - used for fast searching
+	private ArrayList<Pair> PeerList;		//Links a peer to a sector
+	
 	/* Graph - constructor
 	 * initializes Graph
 	 */
@@ -21,6 +23,7 @@ public class Graph {
 		strmat = new FullFunctionMatching();
 		URLMap = new HashMap<String, Integer>();
 		NameMap = new HashMap<String,Integer>();
+		PeerList = new ArrayList<Pair>();
 	}
 	
 	
@@ -38,6 +41,19 @@ public class Graph {
 		NameMap.put(pageName, currentIndex);
 		return currentIndex;
 	}
+	public int addNode(String URL, String pageName, int HTMLindex){
+		currentIndex++;
+		URLnode tempNode = new URLnode(currentIndex);
+		tempNode.setPageURL(URL);
+		tempNode.setPageName(pageName);
+		tempNode.setHTMLindex(HTMLindex);
+		Map.add(tempNode);
+		URLMap.put(URL, currentIndex);
+		NameMap.put(pageName, currentIndex);
+		return currentIndex;				
+	}
+	
+	
 	
 	/* findNodeURL
 	 * attempts to find a node based on a URL
@@ -52,6 +68,8 @@ public class Graph {
 			return URLMap.get(URL);		
 	}
 	
+	
+	
 	/* findNodeName
 	 * attempts to find a node based on a page name
 	 * 
@@ -64,6 +82,8 @@ public class Graph {
 		else
 			return NameMap.get(name);		
 	}
+	
+	
 	
 	/* updateNode
 	 * updates a node given an index and a parameter name - will probably be used for HTMLindex and indexed only
@@ -114,6 +134,37 @@ public class Graph {
 				System.out.println("Graph Error::Invalid parameter! Node not updated.");
 		}
 	}
+	public void updateNode(String URL,String parameter,String value){
+		if(URLMap.get(URL) != null){
+			int index = URLMap.get(URL);
+			updateNode(index,parameter,value);			
+		}
+		else
+			System.out.println("Graph Error::Cannot find URL! Node not updated.");		
+		
+	}
+	public void updateNode(String URL,String parameter,int value){
+		if(URLMap.get(URL) != null){
+			int index = URLMap.get(URL);
+			updateNode(index,parameter,value);			
+		}
+		else
+			System.out.println("Graph Error::Cannot find URL! Node not updated.");		
+		
+	}
+	public void updateNode(String URL,String parameter,boolean value){
+		if(URLMap.get(URL) != null){
+			int index = URLMap.get(URL);
+			updateNode(index,parameter,value);			
+		}
+		else
+			System.out.println("Graph Error::Cannot find URL! Node not updated.");		
+		
+	}
+	
+	
+	
+	
 	
 	/* addLink
 	 * adds a connection from one node to another. Also increments the page rank of the other page
@@ -123,16 +174,41 @@ public class Graph {
 	 */
 	public void addLink(int originalNode, int linkedToNode){
 		if(originalNode < 0 || originalNode > currentIndex || linkedToNode < 0 || linkedToNode > currentIndex)
-			System.out.println("Graph Error::originalNode or linkedToNode is out of bounds! Link not added.");		
+			System.out.println("addLink Error::originalNode or linkedToNode is out of bounds! Link not added.");		
 		else{
 			Map.get(originalNode).addLink(linkedToNode);
 			Map.get(linkedToNode).incLinkedTo();
 		}
 	}
+	public void addLink(String URL_orig, int linkedToNode){
+		if(URLMap.get(URL_orig) != null){
+			int index = URLMap.get(URL_orig);
+			addLink(index,linkedToNode);			
+		}
+		else
+			System.out.println("addLink Error::Cannot find URL! Link not added.");				
+	}
+	public void addLink(int originalNode, String URL_linked){
+		if(URLMap.get(URL_linked) != null){
+			int index = URLMap.get(URL_linked);
+			addLink(originalNode,index);			
+		}
+		else
+			System.out.println("addLink Error::Cannot find URL! Link not added.");				
+	}
+	public void addLink(String URL_orig, String URL_linked){
+		if(URLMap.get(URL_orig) != null && URLMap.get(URL_linked) != null){
+			int index_orig = URLMap.get(URL_orig);
+			int index_linked = URLMap.get(URL_linked);
+			addLink(index_orig,index_linked);			
+		}
+		else
+			System.out.println("addLink Error::Cannot find URL! Link not added.");				
+	}
 	
 	
 	
-	/* treeSearch
+	/* treeSearch - Deprecated
 	 * searches the graph based on given parameters
 	 * NOTE:: This is an expensive operation. It should be used as infrequently as possible
 	 * 
