@@ -34,7 +34,7 @@ public class FunctionalCrawlerTest {
 	public void test() throws IOException, BadLocationException {
 		Crawler crawl = new Crawler();
 		crawl.setPrintOutput(true);
-		crawl.recursiveCrawl();
+		crawl.startCrawling();
 	}
 
 }

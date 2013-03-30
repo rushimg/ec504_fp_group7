@@ -1,5 +1,4 @@
 package basicWebCrawler;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,11 +29,17 @@ public class Crawler {
 	public Crawler(){
 		//TODO: serious cleanup, what vars passed around?
 		//TODO: return ArrayList of simpleDS with all data
-		this.printTime("Start ");
+		//TODO: what counts as bu.edu domain? people.bu.edu?
+		
 		urlQueue.enque(rootURL);
 	}
 	
-	public void recursiveCrawl() throws IOException, BadLocationException{
+	public void startCrawling() throws IOException, BadLocationException{
+		
+		this.recursiveCrawl();
+	}
+	
+	private void recursiveCrawl() throws IOException, BadLocationException{
 		try{
 			String next = urlQueue.deque();
 			if (printOutput) {System.out.println(next);}
@@ -124,6 +129,7 @@ public class Crawler {
 	}
 	
 	//TODO: More checks?
+	//TODO: need a better check here
 	public String checkLink(String link, String base){
 		if (!(link.contains(base))){
 			return base + link;
