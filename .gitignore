@@ -1,6 +1,0 @@
-#ignore file types
-*.class
-*.project
-*.classpath
-/bin
-*.metadata*
