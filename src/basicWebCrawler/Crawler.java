@@ -1,5 +1,10 @@
 package basicWebCrawler;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.NoSuchElementException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,17 +24,29 @@ public class Crawler {
 	
     private UrlQueue urlQueue = new UrlQueue();
     private final String rootURL = "http://www.bu.edu";
+    private boolean printOutput = false;
     
 	//constructor 
 	public Crawler(){
 		//TODO: serious cleanup, what vars passed around?
-		//TODO: Actually perform this recursively
+		//TODO: return ArrayList of simpleDS with all data
+		this.printTime("Start ");
 		urlQueue.enque(rootURL);
 	}
 	
-	public simpleDS recursiveCrawl() throws IOException, BadLocationException{
-		return this.crawl(urlQueue.deque());
+	public void recursiveCrawl() throws IOException, BadLocationException{
+		try{
+			String next = urlQueue.deque();
+			if (printOutput) {System.out.println(next);}
+			this.crawl(next);
+			this.recursiveCrawl();
+			//return this.
+		} catch(NoSuchElementException e){
+			if (printOutput) {this.printTime("End ");}
+			//return null;
+		}
 	}
+
 	
 	public simpleDS crawl(String url) throws IOException, BadLocationException{
 		simpleDS ds = new simpleDS();
@@ -114,4 +131,17 @@ public class Crawler {
 		return link;
 	}
 	
+	public void setPrintOutput(boolean tf){
+		this.printOutput = tf;
+	}
+	
+	public boolean getPrintOutput(){
+		return this.printOutput;
+	}
+	
+	private void printTime(String BeginOrEnd){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		System.out.println(BeginOrEnd + dateFormat.format(date));
+	}
 }	
