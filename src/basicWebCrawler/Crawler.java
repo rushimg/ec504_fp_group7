@@ -120,18 +120,19 @@ public class Crawler {
 		      String srcString = (String) attributes
 		          .getAttribute(HTML.Attribute.HREF);
               if (srcString != null){ // check for null, it happens
-            	  srcString = this.checkLink(srcString, currentUrl);
-		          links.add(srcString);
-		          urlQueue.enque(srcString); // add links to the pages that need to be crawled.
+            	  if (srcString.contains("bu.edu")){
+            		  srcString = this.checkLink(srcString, currentUrl);
+            		  links.add(srcString);
+            		  urlQueue.enque(srcString); // add links to the pages that need to be crawled.
+            	  }
               }
 		    }
 		    return links;
 	}
-	
-	//TODO: More checks?
+
 	//TODO: need a better check here
 	public String checkLink(String link, String base){
-		if (!(link.contains(base))){
+		if ( !(link.contains(base)) && !(link.contains("www")) ){
 			return base + link;
 		}
 		return link;
