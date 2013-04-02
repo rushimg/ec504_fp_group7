@@ -1,12 +1,16 @@
 package htmlFilter;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -23,13 +27,19 @@ import java.util.zip.GZIPOutputStream;
  *
  */
 
-public class filter {
+public class Filter {
+	public class index {
+		String key;
+		int frequency;
+		int nodeIndex;
+	}
     private HashMap<String, Integer> freq = new HashMap<String, Integer>();
+    private PriorityQueue<index> freqPQ= new PriorityQueue<>(); 
     
     /**
      * constructor - initialization
      */
-    filter() {
+    Filter() {
         
     }
     
@@ -69,8 +79,6 @@ public class filter {
         outputStr = outputStr.replaceAll("&copy;", "");
         outputStr = outputStr.replaceAll("&amp;", "");
         
-        //change all the letters to lower case
-        outputStr = outputStr.toLowerCase();
         outputStr = outputStr.replaceAll("\t","");
         outputStr = outputStr.replaceAll("\n\r","");
         
@@ -103,6 +111,7 @@ public class filter {
      * @param filteredText - text to be parsed 
      */
     public void parse(String filteredText) {
+    	filteredText = filteredText.toLowerCase();
         String subStr;      //word parsed
         int strLen = filteredText.length();     //length of filteredText
         for (int i = 0;i < strLen;i++) {
@@ -171,7 +180,7 @@ public class filter {
             return null;
         }
         
-        ByteArrayOutputStream baos  = new ByteArrayOutputStream();;
+        ByteArrayOutputStream baos  = new ByteArrayOutputStream();
         GZIPOutputStream gos = new GZIPOutputStream(baos);
         gos.write(input.getBytes());
         gos.close();
@@ -202,5 +211,30 @@ public class filter {
         }
          
         return baos.toString("GBK");
+    }
+    
+    /**get HTML text of specified url
+     * 
+     * @param urlStr - url to get HTML text
+     * @return - HTML text
+     */
+    public String getHTML(String urlStr) {
+        String tempStr = null;
+        StringBuffer sb = new StringBuffer();
+        try {
+            URL url = new URL(urlStr);
+            InputStreamReader is = new InputStreamReader(url.openStream(), "gb2312");
+            BufferedReader br = new BufferedReader(is);
+            
+            while ((tempStr = br.readLine()) != null) {
+                sb.append(tempStr + "\r\n");
+            }
+            
+            br.close();
+        } catch (Exception ex) {
+            System.out.println("url error");
+        }
+              
+        return sb.toString();
     }
 }
