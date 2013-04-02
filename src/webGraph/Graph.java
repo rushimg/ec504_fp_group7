@@ -1,9 +1,11 @@
 package webGraph;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.lang.Math;
+
 import stringMatcher.FullFunctionMatching;
 import customJavaFunctionality.Pair;
-import java.util.HashMap;
-import webGraph.URLnode;
-import java.util.ArrayList;
+import customJavaFunctionality.Triple;
 
 //This is where the magic happens
 public class Graph {
@@ -12,20 +14,102 @@ public class Graph {
 	private FullFunctionMatching strmat;
 	private HashMap<String,Integer> URLMap;		//maps a URL to an index - used for fast searching
 	private HashMap<String,Integer> NameMap;	//maps a Name to an index - used for fast searching
-	private ArrayList<Pair> PeerList;		//Links a peer to a sector
+	private ArrayList<Triple> PeerList;		//Links a peer to a sector
+	
+	private double LOWERBOUND = 80.0;	//minimum percentage per sector
+	private double UPPERBOUND = 120.0;	//maximum percentage per sector	
+	private ArrayList<Integer> NodesPerPeer;
+	private int max_depth;
 	
 	/* Graph - constructor
 	 * initializes Graph
 	 */
-	Graph(){
+	public Graph(){
 		Map = new ArrayList<URLnode>();
 		currentIndex = -1;
 		strmat = new FullFunctionMatching();
 		URLMap = new HashMap<String, Integer>();
 		NameMap = new HashMap<String,Integer>();
-		PeerList = new ArrayList<Pair>();
+		PeerList = new ArrayList<Triple>();
+		NodesPerPeer = new ArrayList<Integer>();
 	}
 	
+	
+	
+	/* setDepth
+	 * sets the depth of the nodes - where depth is the sum of the depths of nodes that have not been seen yet + 1
+	 * 
+	 * @param index - index to node
+	 */
+	public void setDepth(int index){
+		Map.get(index).seen = true;
+		for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++){
+			int link = Map.get(index).LinksTo.get(ii);
+			if(link != index){	//webpages have been known to be silly
+				if(Map.get(link).seen == false){
+					Map.get(link).seen = true;
+					setDepth(link);
+				}
+				
+			}
+		}
+		int depth = 1;
+		for(int ii = 0; ii < Map.get(index).LinksTo.size();ii++){
+			int link = Map.get(index).LinksTo.get(ii);
+			if(link != index){
+				if(Map.get(link).searched == false){
+					depth += Map.get(link).depth;
+					Map.get(link).searched = true;
+				}					
+			}
+		}
+		Map.get(index).depth = depth;		
+	}
+	
+	
+	
+	//start at children of the root
+	
+	public void resector(){
+		for(int ii = 0; ii < Map.size(); ii++){
+			Map.get(ii).searched = false;
+			Map.get(ii).seen = false;
+		}
+		if(Map.size() > 0){
+			int max_depth = Map.get(0).depth;
+			int peers = PeerList.size();
+			int LinksPerPeer = max_depth/peers;
+			int max = (int)Math.ceil(LinksPerPeer*UPPERBOUND);
+			int min = (int)Math.ceil(LinksPerPeer*LOWERBOUND);
+			NodesPerPeer.clear();
+			for(int ii = 0; ii < peers; ii++)
+				NodesPerPeer.add(0);
+			int max_depth_sustainable = max;
+			int currentNode = 0;			
+			
+		}
+	}
+	
+	private void sectorUp(int index, int optimal, int max, int min){
+		Map.get(index).seen = true;
+		if(Map.get(index).depth > max_depth){
+			for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++)
+				sectorUp(Map.get(index).LinksTo.get(ii), optimal,max, min);
+			AddToBestSector(index, optimal, max, min);		
+		}
+
+	}
+	
+	private void AddToBestSector(int index, int optimal, int max, int min){
+		boolean added = false;
+		int index = 0;
+		while(added == false){
+			if(NodesPerPeer.get(index) <= max && NodesPerPeer.get(index) >= min)
+			
+		}
+		
+		
+	}
 	
 	/* addNode
 	 * creates a node and adds it to the Map
@@ -205,6 +289,39 @@ public class Graph {
 		else
 			System.out.println("addLink Error::Cannot find URL! Link not added.");				
 	}
+	
+	
+	/* printGraph
+	 * prints out all the nodes of the graph to the console	 * 
+	 */
+	public void printGraph(){
+		System.out.println("\n");
+		for(int ii = 0; ii < Map.size(); ii++){
+			System.out.println("Node #" + Map.get(ii).getNodeIndex() + "\t" + Map.get(ii).getPageName());
+			System.out.println("URL = " + Map.get(ii).getPageURL());
+			System.out.println("HTMLIndex = " + Map.get(ii).getHTMLindex() + "\t" + "linked to = " + Map.get(ii).getLinkedTo() + "\t" + "indexed = " + Map.get(ii).getIndexed());
+			System.out.println("Searched = " + Map.get(ii).searched + "\tSeen = " + Map.get(ii).seen);
+			System.out.println("Sector = " + Map.get(ii).sector + "\tDepth = " + Map.get(ii).depth);
+			System.out.print("Links To = ");
+			int size = Map.get(ii).LinksTo.size();
+			if(size > 0){
+				for(int jj = 0; jj < size-1; jj++)
+					System.out.print(Map.get(ii).LinksTo.get(jj) + ", ");
+				System.out.println(Map.get(ii).LinksTo.get(size-1));
+			}
+			System.out.println("\n");			
+		}		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

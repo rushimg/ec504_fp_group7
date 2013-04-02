@@ -14,9 +14,10 @@ public class URLnode {
 	private boolean indexed;	//has this node been indexed by a peer
 	
 	public boolean searched;	//used to determine if node has been searched
+	public boolean seen;
 	public int sector;			//sector that the node belongs to.
 	public ArrayList<Integer> LinksTo;	//List of indices pointed to by this node
-	
+	public int depth;
 	
 	/* URLnode - constructor
 	 * Constructs a URLnode. Minimum info needed is a NodeIndex.
@@ -31,7 +32,9 @@ public class URLnode {
 		LinksTo = new ArrayList<Integer>();		
 		indexed = false;
 		searched = false;
+		seen = false;
 		sector = 0;
+		depth = 0;
 	}
 	
 	/* setNodeIndex
