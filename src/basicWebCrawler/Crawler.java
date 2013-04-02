@@ -1,5 +1,9 @@
 package basicWebCrawler;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.NoSuchElementException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,17 +23,35 @@ public class Crawler {
 	
     private UrlQueue urlQueue = new UrlQueue();
     private final String rootURL = "http://www.bu.edu";
+    private boolean printOutput = false;
     
 	//constructor 
 	public Crawler(){
 		//TODO: serious cleanup, what vars passed around?
-		//TODO: Actually perform this recursively
+		//TODO: return ArrayList of simpleDS with all data
+		//TODO: what counts as bu.edu domain? people.bu.edu?
+		
 		urlQueue.enque(rootURL);
 	}
 	
-	public simpleDS recursiveCrawl() throws IOException, BadLocationException{
-		return this.crawl(urlQueue.deque());
+	public void startCrawling() throws IOException, BadLocationException{
+		
+		this.recursiveCrawl();
 	}
+	
+	private void recursiveCrawl() throws IOException, BadLocationException{
+		try{
+			String next = urlQueue.deque();
+			if (printOutput) {System.out.println(next);}
+			this.crawl(next);
+			this.recursiveCrawl();
+			//return this.
+		} catch(NoSuchElementException e){
+			if (printOutput) {this.printTime("End ");}
+			//return null;
+		}
+	}
+
 	
 	public simpleDS crawl(String url) throws IOException, BadLocationException{
 		simpleDS ds = new simpleDS();
@@ -98,20 +120,35 @@ public class Crawler {
 		      String srcString = (String) attributes
 		          .getAttribute(HTML.Attribute.HREF);
               if (srcString != null){ // check for null, it happens
-            	  srcString = this.checkLink(srcString, currentUrl);
-		          links.add(srcString);
-		          urlQueue.enque(srcString); // add links to the pages that need to be crawled.
+            	  if (srcString.contains("bu.edu")){
+            		  srcString = this.checkLink(srcString, currentUrl);
+            		  links.add(srcString);
+            		  urlQueue.enque(srcString); // add links to the pages that need to be crawled.
+            	  }
               }
 		    }
 		    return links;
 	}
-	
-	//TODO: More checks?
+
+	//TODO: need a better check here
 	public String checkLink(String link, String base){
-		if (!(link.contains(base))){
+		if ( !(link.contains(base)) && !(link.contains("www")) ){
 			return base + link;
 		}
 		return link;
 	}
 	
+	public void setPrintOutput(boolean tf){
+		this.printOutput = tf;
+	}
+	
+	public boolean getPrintOutput(){
+		return this.printOutput;
+	}
+	
+	private void printTime(String BeginOrEnd){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		System.out.println(BeginOrEnd + dateFormat.format(date));
+	}
 }	
