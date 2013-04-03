@@ -6,7 +6,8 @@ public class Triple {
 	public int second;
 	public ArrayList<Integer> third;
 	
-	Triple(String first, int second){
+	public Triple(String first, int second){
+		third = new ArrayList<Integer>();
 		this.first = first;
 		this.second = second;
 	}
