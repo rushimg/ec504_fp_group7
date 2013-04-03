@@ -16,8 +16,8 @@ public class Graph {
 	private HashMap<String,Integer> NameMap;	//maps a Name to an index - used for fast searching
 	private ArrayList<Triple> PeerList;		//Links a peer to a sector
 	
-	private double LOWERBOUND = 80.0;	//minimum percentage per sector
-	private double UPPERBOUND = 120.0;	//maximum percentage per sector	
+	private double LOWERBOUND = 0.80;	//minimum percentage per sector
+	private double UPPERBOUND = 1.20;	//maximum percentage per sector	
 	private ArrayList<Integer> NodesPerPeer;
 	private int max_depth;
 	
@@ -76,16 +76,15 @@ public class Graph {
 			Map.get(ii).seen = false;
 		}
 		if(Map.size() > 0){
-			int max_depth = Map.get(0).depth;
 			int peers = PeerList.size();
-			int LinksPerPeer = max_depth/peers;
+			int LinksPerPeer = Map.get(0).depth/peers;
 			int max = (int)Math.ceil(LinksPerPeer*UPPERBOUND);
 			int min = (int)Math.ceil(LinksPerPeer*LOWERBOUND);
 			NodesPerPeer.clear();
 			for(int ii = 0; ii < peers; ii++)
 				NodesPerPeer.add(0);
-			int max_depth_sustainable = max;
-			int currentNode = 0;			
+			calcMaxDepth(max);
+			sectorUp(0,LinksPerPeer,max,min);
 			
 		}
 	}
@@ -95,20 +94,100 @@ public class Graph {
 		if(Map.get(index).depth > max_depth){
 			for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++)
 				sectorUp(Map.get(index).LinksTo.get(ii), optimal,max, min);
-			AddToBestSector(index, optimal, max, min);		
+			AddToBestSector(index, max);		
 		}
-
-	}
-	
-	private void AddToBestSector(int index, int optimal, int max, int min){
-		boolean added = false;
-		int index = 0;
-		while(added == false){
-			if(NodesPerPeer.get(index) <= max && NodesPerPeer.get(index) >= min)
+		else{
+			int sector = findBestSector(Map.get(index).depth, max);
+			PeerList.get(sector).third.add(index);
+			setSector(index,sector);
+			calcMaxDepth(max);
 			
 		}
+	}
+	
+	
+	/* setSector
+	 * DFS to set the sector
+	 * 
+	 * @param index - index of node
+	 * @param sector - sector of node
+	 */
+	private void setSector(int index, int sector){
+		Map.get(index).seen = true;
+		Map.get(index).sector = sector;
+		NodesPerPeer.set(sector,NodesPerPeer.get(sector) + 1);
+		for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++){
+			int newIndex = Map.get(index).LinksTo.get(ii);
+			if(Map.get(newIndex).seen == false)
+				setSector(newIndex, sector);
+		}	
+	}
+	
+	/* findBestSector
+	 * gets the best fit for the input
+	 * 
+	 * @param depth - depth of input
+	 * @param max - max size for a peer
+	 * @return - sector
+	 */
+	private int findBestSector(int depth, int max){
+		int bestFit = max+10;
+		int bestFitIndex = -1;
+		for(int ii = 0; ii < NodesPerPeer.size(); ii++){
+			int val = max - (NodesPerPeer.get(ii) + depth);
+			if(bestFit > val && val >= 0){
+				bestFit = val;
+				bestFitIndex = ii;
+			}
+		}
 		
-		
+		return bestFitIndex;		
+	}
+	
+	/* AddToBestSector
+	 * sets the sector of the node to be part of the sector that has the fewest members
+	 * 
+	 * @param index - index to node
+	 * @param max - max size of a Peer
+	 */
+	private void AddToBestSector(int index, int max){
+		boolean found = false;
+		int min_index = 0;
+		int min_value = max;
+		for(int ii = 0; ii < NodesPerPeer.size(); ii++){
+			int val = NodesPerPeer.get(ii);
+			if(min_value > val && val + 1 <= max && val != 0){
+				min_value = val;
+				min_index = ii;
+				found = true;
+			}
+		}
+		if(found == false){
+			for(int ii = 0; ii < NodesPerPeer.size();ii++){
+				if(NodesPerPeer.get(ii) == 0){
+					min_index = ii;
+					min_value = 0;
+					break;
+				}
+			}
+		}		
+		NodesPerPeer.set(min_index, min_value + 1);
+		Map.get(index).sector = min_index;
+		PeerList.get(min_index).third.add(index);	
+		calcMaxDepth(max);
+	}
+	
+	/* calcMaxDepth
+	 * calculates the maximum depth that can be sustained by any Peer
+	 * 
+	 * @param - max size of Peer
+	 */
+	private void calcMaxDepth(int max){
+		int maxDepth = 0;
+		for(int ii = 0; ii < NodesPerPeer.size(); ii++)
+			if(maxDepth < (max - NodesPerPeer.get(ii)))
+				maxDepth = (max - NodesPerPeer.get(ii));
+		max_depth = maxDepth;		
 	}
 	
 	/* addNode
@@ -315,7 +394,15 @@ public class Graph {
 	}
 	
 	
-	
+	/* addPeer
+	 * adds a Peer to the graph - should trigger resorting, but we're testing this stuff still
+	 * 
+	 * @param PeerName - name of the peer. Should be epic.
+	 */
+	public void addPeer(String PeerName){
+		Triple newPeer = new Triple(PeerName,PeerList.size());
+		PeerList.add(newPeer);		
+	}
 	
 	
 	
