@@ -12,14 +12,14 @@ import java.util.logging.Logger;
  *
  * @author Tong Liu
  */
-public class testFilter {
+public class TestFilter {
     public static void main(String args[]) throws UnsupportedEncodingException, IOException {
         //String inputURL = "http://algorithmics.bu.edu/twiki/bin/view/EC504";
         //String inputURL = "http://www.bu.edu/ece";
         String inputURL = "https://github.com";
         //System.out.println(getHTML(inputURL));
         String inputHTML = getHTML(inputURL);
-        filter fl = new filter();
+        Filter fl = new Filter();
         String textFiltered = fl.filterToText(inputHTML);
         //System.out.println(textFiltered);
         //fl.parse(textFiltered);
