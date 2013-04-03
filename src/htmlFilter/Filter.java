@@ -43,9 +43,9 @@ public class Filter {
             int tFreq = t.frequency;
             int t1Freq = t1.frequency;
             if (tFreq > t1Freq) 
-                return 1;
-            else if (tFreq < t1Freq)
                 return -1;
+            else if (tFreq < t1Freq)
+                return 1;
             return 0;
         }
     };
@@ -54,7 +54,7 @@ public class Filter {
     /**
      * constructor - initialization
      */
-    Filter() {
+    public Filter() {
 
     }
     
