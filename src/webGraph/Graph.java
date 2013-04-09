@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.Math;
 import java.util.Stack;
+import basicWebCrawler.simpleDS;
 
 //import stringMatcher.FullFunctionMatching;
 //import customJavaFunctionality.Pair;
@@ -39,9 +40,19 @@ public class Graph {
 /***************************INTERFACE OPERATIONS*****************************************/
 //region interface
 
-public void getNodeLists(){
-	
-	
+/** getNodeLists
+ * called to add Nodes to the graph
+ * 
+ * @param newNodes - list of <simpleDS> of nodes
+ * @note nothing is done with rawHTML at the moment.
+ */
+public void getNodeLists(ArrayList<simpleDS> newNodes){
+	for(int ii = 0; ii < newNodes.size(); ii++){
+		int index = addNode(newNodes.get(ii).getPageURL(), newNodes.get(ii).getPageTitle());
+		Map.get(index).setText(newNodes.get(ii).getRawText());
+		for(int jj = 0; jj < newNodes.get(ii).getLinksList().size(); jj++)
+			addLink(index,newNodes.get(ii).getLinksList().get(jj));		
+	}	
 }
 
 
@@ -60,7 +71,14 @@ public int getLinksIn(int index){
 		return Map.get(index).getLinkedTo();
 }
 	
-	
+/** getNextNodeToIndex
+ * 
+ * @param peerName - name of the peer asking
+ * @return next node. If -1 it could mean the peerName has not been found, or that all nodes have been searched
+ */
+public int getNextNodeToIndex(String peerName){
+	return sectorSearch(peerName);	
+}
 	
 //endregion interface	
 	
@@ -80,6 +98,11 @@ public int getLinksIn(int index){
 				peerIndex = ii;
 				break;
 			}
+		}
+		
+		if(peerIndex == -1){
+			System.out.println("Peer Name not found!");
+			return -1;			
 		}
 		
 		int sector = PeerList.get(peerIndex).second;

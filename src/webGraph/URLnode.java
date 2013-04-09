@@ -12,6 +12,7 @@ public class URLnode {
 	private int HTMLindex;	//index to list of HTML text. If the link is clicked it will send the index to the main interface which will grab and decode the HTML code and load it into the browser
 	private int linkedTo;	//number of links to the page
 	private boolean indexed;	//has this node been indexed by a peer
+	private String rawText;		//text on page		
 	
 	public boolean searched;	//used to determine if node has been searched
 	public boolean seen;
@@ -35,6 +36,7 @@ public class URLnode {
 		seen = false;
 		sector = 0;
 		depth = 0;
+		rawText = "";
 	}
 	
 	/* setNodeIndex
@@ -153,7 +155,23 @@ public class URLnode {
 			System.out.println("URLnode Error::newNode index is below 0! Not adding a node.");
 	}
 
-
+	/** setText
+	 * sets the text of the URL to something
+	 * 
+	 * @param newText - text to set <rawText> to.
+	 */
+	public void setText(String newText){
+		rawText = newText;
+	}
+	
+	/** getText
+	 * returns the rawText
+	 * 
+	 * @return <rawText>
+	 */
+	public String getText(){
+		return rawText;
+	}
 
 
 
