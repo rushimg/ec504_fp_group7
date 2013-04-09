@@ -29,7 +29,7 @@ import java.util.zip.GZIPOutputStream;
  */
 
 public class Filter {
-	public class index {
+	public class Index {
 		String key;
 		int frequency;
 		int nodeIndex;
@@ -37,24 +37,24 @@ public class Filter {
   
     private HashMap<String, Integer> freq = new HashMap<String, Integer>();
     
-    private Comparator<index> cmp = new Comparator<index>() {
+    private Comparator<Index> cmp = new Comparator<Index>() {
         @Override
-        public int compare(index t, index t1) {
+        public int compare(Index t, Index t1) {
             int tFreq = t.frequency;
             int t1Freq = t1.frequency;
             if (tFreq > t1Freq) 
-                return 1;
-            else if (tFreq < t1Freq)
                 return -1;
+            else if (tFreq < t1Freq)
+                return 1;
             return 0;
         }
     };
     
-    private PriorityQueue<index> freqPQ= new PriorityQueue<>(10, cmp); 
+    private PriorityQueue<Index> freqPQ= new PriorityQueue<>(10, cmp); 
     /**
      * constructor - initialization
      */
-    Filter() {
+    public Filter() {
 
     }
     
@@ -182,7 +182,7 @@ public class Filter {
     	Iterator<Map.Entry<String, Integer>> freqIter = freq.entrySet().iterator();
         while (freqIter.hasNext()) {
         	Map.Entry<String, Integer> tempEntry = freqIter.next();
-        	index tempIndex = new index();
+        	Index tempIndex = new Index();
         	tempIndex.key = tempEntry.getKey();
         	tempIndex.frequency = tempEntry.getValue();
         	freqPQ.add(tempIndex);
@@ -194,7 +194,7 @@ public class Filter {
      */
     public void printInOrder() {
     	while(freqPQ.size() > 0) {
-    		index tempIndex = freqPQ.poll();
+    		Index tempIndex = freqPQ.poll();
     		System.out.println(tempIndex.key + " " + tempIndex.frequency + " " + tempIndex.nodeIndex);
     	}
     }
@@ -204,6 +204,13 @@ public class Filter {
      */
     public HashMap<String, Integer> getHashMap() {      
         return freq;
+    }
+    
+    /**
+     * return priorityQueue in order
+     */
+    public PriorityQueue<Index> getPQ() {
+    	return freqPQ;
     }
     
     /**
