@@ -2,16 +2,17 @@ package webGraph;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.Math;
+import java.util.Stack;
 
-import stringMatcher.FullFunctionMatching;
-import customJavaFunctionality.Pair;
+//import stringMatcher.FullFunctionMatching;
+//import customJavaFunctionality.Pair;
 import customJavaFunctionality.Triple;
 
 //This is where the magic happens
 public class Graph {
 	private ArrayList<URLnode> Map;		//web map
 	private int currentIndex;	//index of the last added node
-	private FullFunctionMatching strmat;
+	//private FullFunctionMatching strmat;
 	private HashMap<String,Integer> URLMap;		//maps a URL to an index - used for fast searching
 	private HashMap<String,Integer> NameMap;	//maps a Name to an index - used for fast searching
 	private ArrayList<Triple> PeerList;		//Links a peer to a sector
@@ -27,7 +28,7 @@ public class Graph {
 	public Graph(){
 		Map = new ArrayList<URLnode>();
 		currentIndex = -1;
-		strmat = new FullFunctionMatching();
+		//strmat = new FullFunctionMatching();
 		URLMap = new HashMap<String, Integer>();
 		NameMap = new HashMap<String,Integer>();
 		PeerList = new ArrayList<Triple>();
@@ -35,8 +36,75 @@ public class Graph {
 	}
 	
 	
+/***************************INTERFACE OPERATIONS*****************************************/
+//region interface
+
+public void getNodeLists(){
 	
-	/* setDepth
+	
+}
+
+
+/** getLinksIn -> Interface with Data Structure
+ * returns the number of links going into that node - used for page rank
+ * 
+ * @param index - index to the node
+ * @return # of links going into the node
+ */
+public int getLinksIn(int index){
+	if(index > Map.size()){
+		System.out.println("Index is out of bounds!");
+		return -1;
+	}
+	else
+		return Map.get(index).getLinkedTo();
+}
+	
+	
+	
+//endregion interface	
+	
+/***************************SECTOR OPERATIONS********************************************/	
+//region sector
+	
+	/** sectorSeach
+	 * Perform BFS until a node is found, or all nodes have been searched
+	 * 
+	 * @param peerName - name of peer to search index for
+	 * @return index to node to search
+	 */
+	public int sectorSearch(String peerName){
+		int peerIndex = -1;
+		for(int ii = 0; ii < PeerList.size(); ii++){
+			if(PeerList.get(ii).first.equals(peerName)){
+				peerIndex = ii;
+				break;
+			}
+		}
+		
+		int sector = PeerList.get(peerIndex).second;
+		Stack<Integer> ToSearch = new Stack<Integer>();
+		for(int ii = 0; ii < PeerList.get(peerIndex).third.size(); ii++){
+			ToSearch.push(PeerList.get(peerIndex).third.get(ii));
+			while(ToSearch.size() > 0){
+				int index = ToSearch.pop();
+				if(Map.get(index).sector == sector){
+					if(Map.get(index).getIndexed() == false){
+						//Check among other peers if possible?
+						Map.get(index).setIndexed(true);
+						return index;						
+					}
+					else{
+						for(int jj = 0; jj < Map.get(index).LinksTo.size(); jj++)
+							ToSearch.push(Map.get(index).LinksTo.get(jj));
+					}
+				}
+			}
+		}
+		return -1;	//no nodes found, all nodes searched
+	}
+	
+	/** setDepth
 	 * sets the depth of the nodes - where depth is the sum of the depths of nodes that have not been seen yet + 1
 	 * 
 	 * @param index - index to node
@@ -67,9 +135,10 @@ public class Graph {
 	}
 	
 	
-	
+	/** resector
+	 *  redistributes sectors among nodes based on number of peers
+	 */
 	//start at children of the root
-	
 	public void resector(){
 		for(int ii = 0; ii < Map.size(); ii++){
 			Map.get(ii).searched = false;
@@ -81,14 +150,24 @@ public class Graph {
 			int max = (int)Math.ceil(LinksPerPeer*UPPERBOUND);
 			int min = (int)Math.ceil(LinksPerPeer*LOWERBOUND);
 			NodesPerPeer.clear();
-			for(int ii = 0; ii < peers; ii++)
+			for(int ii = 0; ii < peers; ii++){
 				NodesPerPeer.add(0);
+				PeerList.get(ii).second = ii;
+			}
 			calcMaxDepth(max);
 			sectorUp(0,LinksPerPeer,max,min);
 			
 		}
 	}
 	
+
+	/** sectorUp
+	 * 
+	 * @param index - index to current node
+	 * @param optimal - optimal depth/peer
+	 * @param max - max possible depth/peer
+	 * @param min - min possible depth/peer
+	 */
 	private void sectorUp(int index, int optimal, int max, int min){
 		Map.get(index).seen = true;
 		if(Map.get(index).depth > max_depth){
@@ -106,7 +185,7 @@ public class Graph {
 	}
 	
 	
-	/* setSector
+	/** setSector
 	 * DFS to set the sector
 	 * 
 	 * @param index - index of node
@@ -123,7 +202,8 @@ public class Graph {
 		}	
 	}
 	
-	/* findBestSector
+	
+	/** findBestSector
 	 * gets the best fit for the input
 	 * 
 	 * @param depth - depth of input
@@ -144,7 +224,8 @@ public class Graph {
 		return bestFitIndex;		
 	}
 	
-	/* AddToBestSector
+	
+	/** AddToBestSector
 	 * sets the sector of the node to be part of the sector that has the fewest members
 	 * 
 	 * @param index - index to node
@@ -177,7 +258,8 @@ public class Graph {
 		calcMaxDepth(max);
 	}
 	
-	/* calcMaxDepth
+	
+	/** calcMaxDepth
 	 * calculates the maximum depth that can be sustained by any Peer
 	 * 
 	 * @param - max size of Peer
@@ -189,8 +271,14 @@ public class Graph {
 				maxDepth = (max - NodesPerPeer.get(ii));
 		max_depth = maxDepth;		
 	}
+
 	
-	/* addNode
+//endregion sector	
+	
+/***************************NODE OPERATIONS**********************************************/	
+//region node
+	
+	/** addNode
 	 * creates a node and adds it to the Map
 	 * Then sets the URL and pageName and returns the index to that node
 	 */
@@ -217,8 +305,7 @@ public class Graph {
 	}
 	
 	
-	
-	/* findNodeURL
+	/** findNodeURL
 	 * attempts to find a node based on a URL
 	 * 
 	 * @param URL - the URL of the node
@@ -232,8 +319,7 @@ public class Graph {
 	}
 	
 	
-	
-	/* findNodeName
+	/** findNodeName
 	 * attempts to find a node based on a page name
 	 * 
 	 * @param name - the name of the page
@@ -247,8 +333,7 @@ public class Graph {
 	}
 	
 	
-	
-	/* updateNode
+	/** updateNode
 	 * updates a node given an index and a parameter name - will probably be used for HTMLindex and indexed only
 	 * 
 	 * @param index - index of the node
@@ -326,10 +411,7 @@ public class Graph {
 	}
 	
 	
-	
-	
-	
-	/* addLink
+	/** addLink
 	 * adds a connection from one node to another. Also increments the page rank of the other page
 	 * 
 	 * @param orignalNode - URL with the link
@@ -370,7 +452,12 @@ public class Graph {
 	}
 	
 	
-	/* printGraph
+	
+//endregion node
+	
+/***************************GRAPH OPERATIONS*********************************************/
+//region graph
+	/** printGraph
 	 * prints out all the nodes of the graph to the console	 * 
 	 */
 	public void printGraph(){
@@ -394,7 +481,7 @@ public class Graph {
 	}
 	
 	
-	/* addPeer
+	/** addPeer
 	 * adds a Peer to the graph - should trigger resorting, but we're testing this stuff still
 	 * 
 	 * @param PeerName - name of the peer. Should be epic.
@@ -409,10 +496,11 @@ public class Graph {
 	
 	
 	
-	
-	
-	
-	/* treeSearch - Deprecated
+//endregion graph
+
+/***************************DEPRECATED***************************************************/	
+//region deprecated
+	/** treeSearch - Deprecated
 	 * searches the graph based on given parameters
 	 * NOTE:: This is an expensive operation. It should be used as infrequently as possible
 	 * 
@@ -421,6 +509,7 @@ public class Graph {
 	 * 
 	 * @returns index of the node, or -1 if the node is not found
 	 */
+	@SuppressWarnings("unused")
 	private int treeSearch(String parameter, String value){
 		if(parameter.equals("pageName")){	//worst possible search
 			int index = DFS_pageName(0,value);	//root is assumed to be at 0
@@ -436,7 +525,7 @@ public class Graph {
 		}
 	}
 	
-	/* DFS_pageName
+	/** DFS_pageName
 	 * Performs a depth-first search of the tree, searching by pageName
 	 * Will probably take a bajillion years
 	 * 
@@ -463,6 +552,6 @@ public class Graph {
 	
 	
 	
-	
+//endregion deprecated
 	
 }
