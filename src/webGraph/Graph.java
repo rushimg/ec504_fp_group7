@@ -11,7 +11,7 @@ import customJavaFunctionality.Triple;
 
 //This is where the magic happens
 public class Graph {
-	private ArrayList<URLnode> Map;		//web map
+	public ArrayList<URLnode> Map;		//web map
 	private int currentIndex;	//index of the last added node
 	//private FullFunctionMatching strmat;
 	private HashMap<String,Integer> URLMap;		//maps a URL to an index - used for fast searching

@@ -12,7 +12,7 @@ public class UrlQueue {
 	private Queue<String> queue = new LinkedList<String>(); 
 	
 	
-	UrlQueue(){
+	public UrlQueue(){
 	}
 	
 	public void enque(String inputURL){

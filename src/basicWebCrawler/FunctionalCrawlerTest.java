@@ -1,4 +1,5 @@
 package basicWebCrawler;
+import basicWebCrawler.Crawler;
 
 import static org.junit.Assert.*;
 

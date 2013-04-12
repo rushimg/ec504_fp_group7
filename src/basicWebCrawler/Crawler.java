@@ -1,4 +1,6 @@
 package basicWebCrawler;
+import basicWebCrawler.UrlQueue;
+import basicWebCrawler.simpleDS;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
