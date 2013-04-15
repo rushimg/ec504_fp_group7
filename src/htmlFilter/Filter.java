@@ -30,9 +30,9 @@ import java.util.zip.GZIPOutputStream;
 
 public class Filter {
 	public class Index {
-		String key;
-		int frequency;
-		int nodeIndex;
+		public String key;
+		public int frequency;
+		public int nodeIndex;
 	}
   
     private HashMap<String, Integer> freq = new HashMap<String, Integer>();
@@ -51,6 +51,7 @@ public class Filter {
     };
     
     private PriorityQueue<Index> freqPQ= new PriorityQueue<>(10, cmp); 
+    
     /**
      * constructor - initialization
      */

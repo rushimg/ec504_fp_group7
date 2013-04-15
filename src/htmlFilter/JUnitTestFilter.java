@@ -12,13 +12,13 @@ public class JUnitTestFilter {
 	@Test
 	public void testParsing() throws UnsupportedEncodingException, IOException {
 		Filter filter = new Filter();
-		String inputHTML = filter.getHTML("http://www.amazon.com");
+		String inputHTML = filter.getHTML("http://www.bu.edu");
 		String textFiltered = filter.filterToText(inputHTML);
-		//System.out.println(textFiltered);
+		System.out.println(textFiltered);
 		filter.parse(textFiltered);
-        //filter.printHashMap();  
-		filter.storeInOrder();
-		filter.printInOrder();
+        filter.printHashMap();  
+		//filter.storeInOrder();
+		//filter.printInOrder();
 	}
 	
 	@Test

@@ -26,6 +26,7 @@ public class Crawler {
     private UrlQueue urlQueue = new UrlQueue();
     private final String rootURL = "http://www.bu.edu";
     private boolean printOutput = false;
+    private simpleDS currentDS = new simpleDS();
     
 	//constructor 
 	public Crawler(){
@@ -45,8 +46,8 @@ public class Crawler {
 		try{
 			String next = urlQueue.deque();
 			if (printOutput) {System.out.println(next);}
-			this.crawl(next);
-			this.recursiveCrawl();
+			this.currentDS = this.crawl(next);
+			//this.recursiveCrawl();
 			//return this.
 		} catch(NoSuchElementException e){
 			if (printOutput) {this.printTime("End ");}
@@ -152,5 +153,13 @@ public class Crawler {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		System.out.println(BeginOrEnd + dateFormat.format(date));
+	}
+	
+	public simpleDS getCurrentDS() {
+		return this.currentDS;
+	}
+	
+	public UrlQueue getUrlQueue() {
+		return this.urlQueue;
 	}
 }	
