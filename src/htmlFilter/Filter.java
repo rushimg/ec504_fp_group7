@@ -126,6 +126,8 @@ public class Filter {
      * @param filteredText - text to be parsed 
      */
     public void parse(String filteredText) {
+    	freq.clear();	//clear hashmap and priorityQ before parse again
+    	freqPQ.clear();
     	filteredText = filteredText.toLowerCase();
         String subStr;      //word parsed
         int strLen = filteredText.length();     //length of filteredText
@@ -209,7 +211,7 @@ public class Filter {
     /**
      * return priorityQueue in order
      */
-    public PriorityQueue<Index> getPQ() {
+    public PriorityQueue<Index> getPriorityQueue() {
     	return freqPQ;
     }
     
