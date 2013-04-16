@@ -129,7 +129,7 @@ public class StoreAndSearch {
 					{
 						int b = ReturnFreq.get(i);
 						int c = ReturnIndex.get(i);
-						if (b == a) {
+						if (b == a) {  //TONG LIU: cannot understand here
 							IndexCopy.add(c);
 						}
 					}
@@ -160,7 +160,7 @@ public class StoreAndSearch {
 					{
 						int b = ReturnFreq.get(i);
 						int c = ReturnIndex.get(i);
-						if (b == a) {
+						if (b == a) {	//TONG LIU: cannot understand here
 							IndexCopy.add(c);
 						}
 					}

@@ -1,9 +1,8 @@
 package client;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
-
 import javax.swing.text.BadLocationException;
-
 import basicWebCrawler.simpleDS;
 import basicWebCrawler.Crawler;
 import webGraph.Graph;
@@ -16,7 +15,7 @@ public class MainClient {
 	private static String peerName;
 	private static Graph net = new Graph();
 	private static Filter filt = new Filter();
-	private static StoreAndSearch DS = new StoreAndSearch();
+	private static StoreAndSearch indexDS = new StoreAndSearch();
 	private static GUI gui = new GUI();
 	
 	public static void main(String [] args) throws IOException, BadLocationException{
@@ -27,32 +26,49 @@ public class MainClient {
 		/******************/
 		Crawler crawler = new Crawler();
 		crawler.setPrintOutput(true);
-		simpleDS tempDs = new simpleDS();
-		while (crawler.getUrlQueue().size() > 0) {
+		simpleDS tempDS = new simpleDS();
+		while (crawler.getUrlQueue().size() < 100) {		//test for only two nodes in this case, change it to "> 0" for full search
 			crawler.startCrawling();
-			tempDs = crawler.getCurrentDS();
-			//TODO: tempDs(simpleDS) ---> URLnode ---> Graph
-			// System.out.println(crawler.getCurrentDS().getRawText());
+			tempDS = crawler.getCurrentDS();
+			net.addNode(tempDS);
+			//TODO: addLink() not fully test, ignore temporarily
+			//TODO: Boring notice frequently: "addLink Error::Cannot find URL! Link not added."
 		}
 		
 		/*****Crawler <-> Graph Interface ******/
 			
-		int nextIndex = -1;
+		int nextIndex = 0;  //not -1 for initialization
 		PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
-		StoreAndSearch indexDS = new StoreAndSearch();
+		int graphSize = net.getIndexSize();
 		
-		while(nextIndex != -1){
-			nextIndex = net.getNextNodeToIndex(peerName);
+		//TODO: didn't use peerName here
+		//TODO: didn't use getNextNodeToIndex() here, add another getIndexSize() in graph.java to test here
+		while(nextIndex <= graphSize){
+			System.out.println(nextIndex);
+			//nextIndex = net.getNextNodeToIndex(peerName);
 			filt.parse(net.Map.get(nextIndex).getText());
 			filt.storeInOrder();
 			indexPriorityQueue = filt.getPriorityQueue();
 			while (!indexPriorityQueue.isEmpty()) {
 				Index newIndex = indexPriorityQueue.poll();
 				indexDS.Store(newIndex.key, newIndex.frequency, nextIndex);
-			}			
+			}
+			nextIndex++;
 		}
 		
+		ArrayList<Integer> testArrayList = indexDS.Search("medical");
+		System.out.println(testArrayList);
+		testArrayList = indexDS.Search("bu");
+		System.out.println(testArrayList);
+		/*TODO: When frequency equal, Search() or Store() creates error, search "TONG LIU" in StoreAndSearch.java to 
+		locate where the error happens I think*/
+		
+		/**
+		 * People who want to run and design GUI conveniently may want to install eclipse WindowsBuilder
+		 *  plugin from: http://www.eclipse.org/windowbuilder/
+		 */
 		gui.open();
-		//TODO:gui needs method for send request
+		//TODO: Interaction with back-end
+		//TODO: parse input text with "AND" and "OR" and their implementation for sending different request and combining result
 	}
 }

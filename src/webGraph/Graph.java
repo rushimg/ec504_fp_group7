@@ -25,7 +25,7 @@ public class Graph {
 	
 	/* Graph - constructor
 	 * initializes Graph
-	 */
+	 */ 
 	public Graph(){
 		Map = new ArrayList<URLnode>();
 		currentIndex = -1;
@@ -326,7 +326,12 @@ public int getNextNodeToIndex(String peerName){
 		NameMap.put(pageName, currentIndex);
 		return currentIndex;				
 	}
-	
+	public void addNode(simpleDS newDS){
+		int index = addNode(newDS.getPageURL(), newDS.getPageTitle());
+		Map.get(index).setText(newDS.getRawText());
+		for(int jj = 0; jj < newDS.getLinksList().size(); jj++)
+			addLink(index, newDS.getLinksList().get(jj));		
+	}
 	
 	/** findNodeURL
 	 * attempts to find a node based on a URL
@@ -514,8 +519,13 @@ public int getNextNodeToIndex(String peerName){
 		PeerList.add(newPeer);		
 	}
 	
-	
-	
+	/**Tong Liu add for test
+	 * 
+	 * @return currentIndex, that is, the size of the Graph
+	 */
+	public int getIndexSize() {
+		return currentIndex;
+	}
 	
 	
 	

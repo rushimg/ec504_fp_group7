@@ -57,9 +57,15 @@ public class GUI {
 		text.setBounds(3, 3, 129, 31);
 		text.setFont(new Font(display, "Arial", 14, SWT.NORMAL));
 		
-		Button btnNewButton = new Button(composite, SWT.NONE);
-		btnNewButton.setBounds(134, 3, 80, 31);
-		btnNewButton.setText("Search");
+		Button selectButton = new Button(composite, SWT.NONE);
+		selectButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String inputText = text.getText();
+			}
+		});
+		selectButton.setBounds(134, 3, 80, 31);
+		selectButton.setText("Search");
 		
 		StyledText styledText = new StyledText(composite, SWT.BORDER);
 		styledText.setBounds(3, 40, 179, 80);
@@ -121,18 +127,22 @@ public class GUI {
 		
 		Button button_2 = new Button(composite, SWT.NONE);
 		button_2.setText(">>");
+		button_2.setVisible(false);
 		button_2.setBounds(186, 298, 28, 80);
 		
 		Button button_3 = new Button(composite, SWT.NONE);
 		button_3.setText(">>");
+		button_3.setVisible(false);
 		button_3.setBounds(186, 384, 28, 80);
 		
 		Button button_4 = new Button(composite, SWT.NONE);
 		button_4.setText(">>");
+		button_4.setVisible(false);
 		button_4.setBounds(186, 470, 28, 80);
 		
 		Button button_5 = new Button(composite, SWT.NONE);
 		button_5.setText(">>");
+		button_5.setVisible(false);
 		button_5.setBounds(186, 556, 28, 86);
 
 		shell.open();
