@@ -1,4 +1,4 @@
-package DataStruct;
+package dataStruct;
 
 import java.util.*;
 import java.io.*;
