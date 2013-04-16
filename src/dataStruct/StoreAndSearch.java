@@ -1,4 +1,4 @@
-package  dataStruct;
+package DataStruct;
 
 import java.util.*;
 import java.io.*;
@@ -28,7 +28,7 @@ public class StoreAndSearch {
 	private static ArrayList<Integer> ReturnFreq = new ArrayList<Integer>();
 
 
-	public StoreAndSearch() {
+	StoreAndSearch() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 		Data dataTest = new Data();
 		String strTest = " ";
@@ -45,9 +45,9 @@ public class StoreAndSearch {
 	}
 
 	/* define method for store */
-
+     
 	public void Store(String WordStore, int Freq, int Index) throws IOException {
-
+           
 		String SubStr;
 		int sz = WordStore.length();
 		Data Info = new Data();
@@ -65,7 +65,6 @@ public class StoreAndSearch {
 				Dic4.set(C3 - C, Map);
 				Dic3.set(C2 - C, Dic4);
 				Dic2.set(C1 - C, Dic3);
-
 			} else {
 				InfoShort.Freq.add(Freq);
 				InfoShort.Index.add(Index);
@@ -100,6 +99,8 @@ public class StoreAndSearch {
 		int sz = WordSearch.length();
 		ArrayList<Integer> FreqCopy = new ArrayList<Integer>();
 		ArrayList<Integer> IndexCopy = new ArrayList<Integer>();
+		 ArrayList<Integer> CheckFreq = new ArrayList<Integer>();
+		 ArrayList<Integer> CheckFreq1 = new ArrayList<Integer>();
 		if (sz > 3) {
 			SubStr = WordSearch.substring(3, sz);
 			C4 = WordSearch.charAt(0);
@@ -125,17 +126,22 @@ public class StoreAndSearch {
 				while (itr.hasNext()) {
 					int a = itr.next();
 					
+					if(CheckFreq.contains(a)!=true){
 					for (int i = 0; i < ReturnFreq.size(); i++)
 					{
 						int b = ReturnFreq.get(i);
 						int c = ReturnIndex.get(i);
-						if (b == a) {  //TONG LIU: cannot understand here
+						if (b == a) {
 							IndexCopy.add(c);
+							
 						}
+						
 					}
+					CheckFreq.add(a);
 
 				}
-
+				
+				}
 			}
 
 		} else {
@@ -155,19 +161,21 @@ public class StoreAndSearch {
 
 				while (itr.hasNext()) {
 					int a = itr.next();
-
+					if(CheckFreq1.contains(a)!=true){
 					for (int i = 0; i < ReturnFreq.size(); i++)
 					{
 						int b = ReturnFreq.get(i);
 						int c = ReturnIndex.get(i);
-						if (b == a) {	//TONG LIU: cannot understand here
+						
+						if (b == a) {
 							IndexCopy.add(c);
 						}
+					} CheckFreq1.add(a);
 					}
 
 				}
 
-			 }
+			}
 		}
 
 		return IndexCopy;
