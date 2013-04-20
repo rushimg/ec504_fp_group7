@@ -3,7 +3,7 @@ package dataStruct;
 import java.util.*;
 import java.io.*;
 
-public class StoreAndSearch {
+public class StoreAndSearch implements Serializable {
 	/* define data type */
 	private char C1, C2, C3, C4, C5, C6;
 	private char C = ' ';
@@ -17,7 +17,7 @@ public class StoreAndSearch {
 	private static HashMap<String, Data> MapShort = new HashMap<String, Data>();
 	
 	// //hashmap for string whose length is greater than 3
-	private static HashMap<String, Data> Map = new HashMap<String, Data>(); 
+//	private static HashMap<String, Data> Map = new HashMap<String, Data>(); 
 	// private ArrayList<ArrayList<ArrayList<ArrayList<HashMap<String,Data>>>>>
 	// Dic1=new
 	// ArrayList<ArrayList<ArrayList<ArrayList<HashMap<String,Data>>>>>();
@@ -46,14 +46,17 @@ public class StoreAndSearch {
 
 	/* define method for store */
      
-	public void Store(String WordStore, int Freq, int Index) throws IOException {
-           
+	public void Store(String WordStore, int Freq, int Index)  throws IOException {
+        
 		String SubStr;
 		int sz = WordStore.length();
 		Data Info = new Data();
 		Data InfoShort = new Data();
-
+		
 		if (Check(WordStore) == 0) {
+			
+			HashMap<String, Data> Map = new HashMap<String, Data>();
+			
 			if (sz > 3) {
 				C1 = WordStore.charAt(0);
 				C2 = WordStore.charAt(1);
@@ -65,6 +68,7 @@ public class StoreAndSearch {
 				Dic4.set(C3 - C, Map);
 				Dic3.set(C2 - C, Dic4);
 				Dic2.set(C1 - C, Dic3);
+			System.out.println(Map.size());
 			} else {
 				InfoShort.Freq.add(Freq);
 				InfoShort.Index.add(Index);
@@ -87,11 +91,21 @@ public class StoreAndSearch {
 				
 				MapShort.get(WordStore).Index.add(Index);
 				MapShort.get(WordStore).Freq.add(Freq);
-
 			}
 		}
+		
+		
 	}
 
+
+	/*public  void StoreFile() throws IOException{
+		
+		ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream("DS.txt"));
+		outStream.writeObject(Dic2);
+		outStream.close();
+	}*/
+	
+	
 	/* define method for search */
 
 	public ArrayList<Integer> Search(String WordSearch) {
@@ -118,9 +132,10 @@ public class StoreAndSearch {
 
 
 				FreqCopy.addAll(ReturnFreq);
+				//System.out.println(FreqCopy);
 				Collections.sort(FreqCopy);
 				Collections.reverse(FreqCopy);
-
+        
 				Iterator<Integer> itr = FreqCopy.iterator();
 
 				while (itr.hasNext()) {
@@ -152,7 +167,7 @@ public class StoreAndSearch {
 
 				ReturnIndex = MapShort.get(WordSearch).Index;
 				ReturnFreq = MapShort.get(WordSearch).Freq;
-
+     
 				FreqCopy.addAll(ReturnFreq);
 				Collections.sort(FreqCopy);
 				Collections.reverse(FreqCopy);
