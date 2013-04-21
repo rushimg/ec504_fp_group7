@@ -23,7 +23,8 @@ public class StoreAndSearch implements Serializable {
 	private static ArrayList<Integer> ReturnIndex = new ArrayList<Integer>();
 	private static ArrayList<Integer> ReturnFreq = new ArrayList<Integer>();
 	private static ArrayList<String> check3=new ArrayList<String>();
-
+	private static ArrayList<String> check2=new ArrayList<String>();
+	private static ArrayList<String> check1=new ArrayList<String>();
 	StoreAndSearch() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 		Data dataTest = new Data();
@@ -51,6 +52,8 @@ public class StoreAndSearch implements Serializable {
 		int sz = WordStore.length();
 		Data Info = new Data();
 		Data InfoShort = new Data();
+		Info.Freq.add(Freq);
+		Info.Index.add(Index);
 		
 		if (Check(WordStore) == 0) {
 			ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
@@ -73,24 +76,44 @@ public class StoreAndSearch implements Serializable {
 				C3 = WordStore.charAt(2);
 				SubStr = WordStore.substring(3, sz);
 				String Sub3=WordStore.substring(0, 3);
+				String Sub2=WordStore.substring(0, 2);
+				String Sub1=WordStore.substring(0, 1);
 				
-
-				if(check3.contains(Sub3)==false){
-					Info.Freq.add(Freq);
-					Info.Index.add(Index);
+				
+				if(!check1.contains(Sub1))
+				{
+					Dic2.get(C1 - C).get(C2 - C).get(C3 - C).put(SubStr, Info);
+					
+				     			}
+				else if(check1.contains(Sub1))
+			     {
+					Map.put(SubStr, Info);
+					ArrayList<HashMap<String, Data>> Dic4_temp = new ArrayList<HashMap<String, Data>>();
+					for (int i = 0; i < 96; i++) {
+					Dic4_temp.add(mapTest);
+					}
+					Dic4_temp.set(C3-C,Map);
+					Dic2.get(C1-C).set(C2-C,Dic4_temp);
+           
+				     check1.add(Sub1);
+			     }
+				else if (check2.contains(Sub2)){
+					 Map.put(SubStr, Info);
+				     Dic2.get(C1-1).get(C2-C).set(C3-C, Map);
+				     check2.add(Sub2);
+				}
+				     
+				else if(check3.contains(Sub3)){
+					
 					Map.put(SubStr, Info);
 					Dic4.set(C3 - C, Map);
 					Dic3.set(C2 - C, Dic4);
 					Dic2.set(C1 - C, Dic3);
 					check3.add(Sub3);
-					}else {
-						Info.Freq.add(Freq);
-						Info.Index.add(Index);
-						Dic2.get(C1 - C).get(C2 - C).get(C3 - C).put(SubStr, Info);
-						
-					}
+					} 
+					         
+					     
 				
-				System.out.println(check3);
 
 			} else {
 				InfoShort.Freq.add(Freq);
