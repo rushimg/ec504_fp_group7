@@ -7,3 +7,5 @@
 
 You may want to add these libraries into our project path to run the GUI.
 You can find all of them from you "eclipse\plugins\" directory, maybe with a different version.
+
+Mac may need have some difference... //TODO

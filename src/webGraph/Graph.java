@@ -466,8 +466,8 @@ public int getNextNodeToIndex(String peerName){
 			int index = URLMap.get(URL_linked);
 			addLink(originalNode,index);			
 		}
-		else
-			System.out.println("addLink Error::Cannot find URL! Link not added.");				
+		//else
+			//System.out.println("addLink Error::Cannot find URL! Link not added.");				
 	}
 	public void addLink(String URL_orig, String URL_linked){
 		if(URLMap.get(URL_orig) != null && URLMap.get(URL_linked) != null){

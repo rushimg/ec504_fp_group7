@@ -56,7 +56,7 @@ public class GUI{
 			crawler.setPrintOutput(true);
 			simpleDS tempDS = new simpleDS();
 			int crawlerCount = 0;
-			while (crawlerCount < 20) {		//test for only two nodes in this case, change it to "> 0" for full search
+			while (crawlerCount < 30) {		//test for only two nodes in this case, change it to "> 0" for full search
 				crawler.startCrawling();
 				tempDS = crawler.getCurrentDS();
 				net.addNode(tempDS);
@@ -172,7 +172,7 @@ public class GUI{
 						StyleRange urlStyleRange = new StyleRange();
 						urlStyleRange.start = tempNode.getPageName().length();
 						urlStyleRange.length = tempNode.getPageURL().length();
-						urlStyleRange.fontStyle = SWT.ITALIC;
+						urlStyleRange.font = new Font(display, "Arial", 8, SWT.ITALIC);
 						StyleRange[] allStyleRanges = new StyleRange[2];
 						allStyleRanges[0] = titleStyleRange;
 						allStyleRanges[1] = urlStyleRange;
@@ -310,7 +310,7 @@ public class GUI{
 		
 		Label pageLabel = new Label(composite, SWT.CENTER);
 		pageLabel.setBounds(102, 620, 45, 20);
-		pageLabel.setFont(new Font(display, "Arial", 12, SWT.NORMAL));
+		pageLabel.setFont(new Font(display, "Arial", 12, SWT.BOLD));
 		pageLabel.setText(String.valueOf(pageNumber));
 		
 		Button leftPageButton = new Button(composite, SWT.CENTER);
