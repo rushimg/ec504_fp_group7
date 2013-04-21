@@ -1,4 +1,5 @@
 package dataStruct;
+
 import java.io.*;
 import java.util.*;
 
@@ -17,17 +18,18 @@ public class TestSearch {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
 		StoreAndSearch testData = new StoreAndSearch();
-		testData.Store(data1, 2, 90);
-		//testData.Store("timer", 3, 80);
-		testData.Store("time", 2, 100);
+		testData.Store("technology", 2, 90);
+		testData.Store("teaa", 3, 80);
+		testData.Store("technology", 2, 100);
+		
 		testData.Store("timer", 3, 85);
-		testData.Store("ccdd", 1, 70);
+		testData.Store("tadaad", 1, 70);
 		
 		testData.Store(data2, 4, 60);
 		testData.Store(data2, 4, 70);
 		testData.Store(data2, 4, 80);
 		testData.Store(data2, 5, 50);
-		testData.Store(data2, 6, 40);
+		testData.Store(data3, 6, 40);
 		testData.Store(data3, 7, 30);
 		testData.Store(data3, 8, 20);
 		testData.Store(data3, 9, 10);
@@ -44,7 +46,7 @@ public class TestSearch {
 		StoreAndSearch decoded = (StoreAndSearch) inStream.readObject();
 		
 		
-		 retData1 = decoded.Search("time");
+		 retData1 = testData.Search("technology");
 		 
 		 retData2 = decoded.Search(data2);
 		 retData3 = decoded.Search(data3);
