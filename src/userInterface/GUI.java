@@ -26,8 +26,6 @@ import basicWebCrawler.simpleDS;
 import htmlFilter.Filter;
 import htmlFilter.Filter.Index;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.wb.swt.SWTResourceManager;
-
 
 public class GUI implements SelectionListener{
 	private Text text;
@@ -112,7 +110,7 @@ public class GUI implements SelectionListener{
 		shell.setSize(1300, 700);
 		shell.setText("EC504_Group7_P2P");
 		shell.setLocation(0, 0);
-		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+		shell.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
 		
 		final Browser browser = new Browser(shell, SWT.BORDER);
 		browser.setBounds(236, 10, 1038, 642);
@@ -246,8 +244,8 @@ public class GUI implements SelectionListener{
 		buttonsArray[6] = button_5;
 		
 	    resultCountLabel = new Label(composite, SWT.NONE);
-		resultCountLabel.setForeground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
-		resultCountLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+		resultCountLabel.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+		resultCountLabel.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
 		resultCountLabel.setBounds(3, 40, 211, 24);
 		resultCountLabel.setText("0 results found");
 		resultCountLabel.setFont(new Font(display, "Arial", 14, SWT.NORMAL));
