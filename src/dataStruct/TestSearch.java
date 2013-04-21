@@ -44,7 +44,7 @@ public class TestSearch {
 		StoreAndSearch decoded = (StoreAndSearch) inStream.readObject();
 		
 		
-		 retData1 = decoded.Search(data1);
+		 retData1 = decoded.Search("lime");
 		 
 		 retData2 = decoded.Search(data2);
 		 retData3 = decoded.Search(data3);
