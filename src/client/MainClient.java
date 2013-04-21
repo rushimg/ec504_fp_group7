@@ -27,7 +27,7 @@ public class MainClient {
 		Crawler crawler = new Crawler();
 		crawler.setPrintOutput(true);
 		simpleDS tempDS = new simpleDS();
-		while (crawler.getUrlQueue().size() < 100) {		//test for only two nodes in this case, change it to "> 0" for full search
+		while (crawler.getUrlQueue().size() < 200) {		//test for only two nodes in this case, change it to "> 0" for full search
 			crawler.startCrawling();
 			tempDS = crawler.getCurrentDS();
 			net.addNode(tempDS);
@@ -60,8 +60,6 @@ public class MainClient {
 		System.out.println(testArrayList);
 		testArrayList = indexDS.Search("bu");
 		System.out.println(testArrayList);
-		/*TODO: When frequency equal, Search() or Store() creates error, search "TONG LIU" in StoreAndSearch.java to 
-		locate where the error happens I think*/
 		
 		/**
 		 * People who want to run and design GUI conveniently may want to install eclipse WindowsBuilder
