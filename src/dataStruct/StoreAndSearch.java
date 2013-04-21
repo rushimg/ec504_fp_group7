@@ -1,6 +1,5 @@
 package dataStruct;
 
-
 import java.util.*;
 import java.io.*;
 
@@ -17,17 +16,13 @@ public class StoreAndSearch implements Serializable {
 	// hashmap for  string whose length is  less or equal to 3
 	private static HashMap<String, Data> MapShort = new HashMap<String, Data>();
 	
-	// //hashmap for string whose length is greater than 3
-//	private static HashMap<String, Data> Map = new HashMap<String, Data>(); 
-	// private ArrayList<ArrayList<ArrayList<ArrayList<HashMap<String,Data>>>>>
-	// Dic1=new
-	// ArrayList<ArrayList<ArrayList<ArrayList<HashMap<String,Data>>>>>();
+	
 	private static ArrayList<ArrayList<ArrayList<HashMap<String, Data>>>> Dic2 = new ArrayList<ArrayList<ArrayList<HashMap<String, Data>>>>();
 	//private static ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
 	//private static ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
 	private static ArrayList<Integer> ReturnIndex = new ArrayList<Integer>();
 	private static ArrayList<Integer> ReturnFreq = new ArrayList<Integer>();
-
+	private static ArrayList<String> check3=new ArrayList<String>();
 
 	StoreAndSearch() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
@@ -38,6 +33,7 @@ public class StoreAndSearch implements Serializable {
 		ArrayList<HashMap<String, Data>> Dic44 = new ArrayList<HashMap<String, Data>>();
 		for (int i = 0; i < 96; i++) {
 			Dic44.add(mapTest);
+		
 		}
 		for (int i = 0; i < 96; i++) {
 			Dic33.add(Dic44);
@@ -76,13 +72,26 @@ public class StoreAndSearch implements Serializable {
 				C2 = WordStore.charAt(1);
 				C3 = WordStore.charAt(2);
 				SubStr = WordStore.substring(3, sz);
-				Info.Freq.add(Freq);
-				Info.Index.add(Index);
-				Map.put(SubStr, Info);
-				Dic4.set(C3 - C, Map);
-				Dic3.set(C2 - C, Dic4);
-				Dic2.set(C1 - C, Dic3);
-			System.out.println(Map.size());
+				String Sub3=WordStore.substring(0, 3);
+				
+
+				if(check3.contains(Sub3)==false){
+					Info.Freq.add(Freq);
+					Info.Index.add(Index);
+					Map.put(SubStr, Info);
+					Dic4.set(C3 - C, Map);
+					Dic3.set(C2 - C, Dic4);
+					Dic2.set(C1 - C, Dic3);
+					check3.add(Sub3);
+					}else {
+						Info.Freq.add(Freq);
+						Info.Index.add(Index);
+						Dic2.get(C1 - C).get(C2 - C).get(C3 - C).put(SubStr, Info);
+						
+					}
+				
+				System.out.println(check3);
+
 			} else {
 				InfoShort.Freq.add(Freq);
 				InfoShort.Index.add(Index);
