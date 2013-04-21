@@ -28,7 +28,7 @@ public class StoreAndSearch implements Serializable {
 	private static ArrayList<Integer> ReturnFreq = new ArrayList<Integer>();
 
 
-	StoreAndSearch() {
+	public StoreAndSearch() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 		Data dataTest = new Data();
 		String strTest = " ";
