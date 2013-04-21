@@ -1,5 +1,6 @@
 package dataStruct;
 
+
 import java.util.*;
 import java.io.*;
 
@@ -22,25 +23,27 @@ public class StoreAndSearch implements Serializable {
 	// Dic1=new
 	// ArrayList<ArrayList<ArrayList<ArrayList<HashMap<String,Data>>>>>();
 	private static ArrayList<ArrayList<ArrayList<HashMap<String, Data>>>> Dic2 = new ArrayList<ArrayList<ArrayList<HashMap<String, Data>>>>();
-	private static ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
-	private static ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
+	//private static ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
+	//private static ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
 	private static ArrayList<Integer> ReturnIndex = new ArrayList<Integer>();
 	private static ArrayList<Integer> ReturnFreq = new ArrayList<Integer>();
 
 
-	public StoreAndSearch() {
+	StoreAndSearch() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 		Data dataTest = new Data();
 		String strTest = " ";
 		mapTest.put(strTest, dataTest);
+		ArrayList<ArrayList<HashMap<String, Data>>> Dic33 = new ArrayList<ArrayList<HashMap<String, Data>>>();
+		ArrayList<HashMap<String, Data>> Dic44 = new ArrayList<HashMap<String, Data>>();
 		for (int i = 0; i < 96; i++) {
-			Dic4.add(mapTest);
+			Dic44.add(mapTest);
 		}
 		for (int i = 0; i < 96; i++) {
-			Dic3.add(Dic4);
+			Dic33.add(Dic44);
 		}
 		for (int i = 0; i < 96; i++) {
-			Dic2.add(Dic3);
+			Dic2.add(Dic33);
 		}
 	}
 
@@ -54,7 +57,18 @@ public class StoreAndSearch implements Serializable {
 		Data InfoShort = new Data();
 		
 		if (Check(WordStore) == 0) {
-			
+			ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
+			ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
+			HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
+			Data dataTest = new Data();
+			String strTest = " ";
+			mapTest.put(strTest, dataTest);
+			for (int i = 0; i < 96; i++) {
+				Dic4.add(mapTest);
+			}
+			for (int i = 0; i < 96; i++) {
+				Dic3.add(Dic4);
+			}
 			HashMap<String, Data> Map = new HashMap<String, Data>();
 			
 			if (sz > 3) {
