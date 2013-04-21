@@ -25,7 +25,7 @@ public class StoreAndSearch implements Serializable {
 	private static ArrayList<String> check3=new ArrayList<String>();
 	private static ArrayList<String> check2=new ArrayList<String>();
 	private static ArrayList<String> check1=new ArrayList<String>();
-	StoreAndSearch() {
+	public StoreAndSearch() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 		Data dataTest = new Data();
 		String strTest = " ";
