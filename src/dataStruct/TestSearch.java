@@ -18,9 +18,9 @@ public class TestSearch {
 		// TODO Auto-generated method stub
 		StoreAndSearch testData = new StoreAndSearch();
 		testData.Store(data1, 2, 90);
-		testData.Store("ssss", 3, 80);
-		testData.Store("abcd", 2, 100);
-		testData.Store("bbcd", 3, 85);
+		//testData.Store("timer", 3, 80);
+		testData.Store("time", 2, 100);
+		testData.Store("timer", 3, 85);
 		testData.Store("ccdd", 1, 70);
 		
 		testData.Store(data2, 4, 60);
@@ -44,7 +44,7 @@ public class TestSearch {
 		StoreAndSearch decoded = (StoreAndSearch) inStream.readObject();
 		
 		
-		 retData1 = decoded.Search("lime");
+		 retData1 = decoded.Search("time");
 		 
 		 retData2 = decoded.Search(data2);
 		 retData3 = decoded.Search(data3);
