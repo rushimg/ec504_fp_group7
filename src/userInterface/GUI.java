@@ -2,18 +2,14 @@
 
 package userInterface;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
-import javax.swing.JButton;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
@@ -38,6 +34,7 @@ public class GUI{
 	private StyledText[] styledTextArray = new StyledText[6];
 	private Button[] buttonsArray = new Button[6];
 	private static int resultCount = 0;
+	private static int maxPageNumber = 1;
 	private static int pageNumber = 1;
 	private static String peerName;
 	private static Graph net = new Graph();
@@ -59,6 +56,8 @@ public class GUI{
 			while (crawlerCount < 30) {		//test for only two nodes in this case, change it to "> 0" for full search
 				crawler.startCrawling();
 				tempDS = crawler.getCurrentDS();
+				if (tempDS == null) 
+					break;
 				net.addNode(tempDS);
 				crawlerCount++;
 				//TODO: addLink() not fully test, ignore temporarily
