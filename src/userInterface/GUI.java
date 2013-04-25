@@ -53,7 +53,7 @@ public class GUI{
 			crawler.setPrintOutput(true);
 			simpleDS tempDS = new simpleDS();
 			int crawlerCount = 0;
-			while ((crawlerCount < 1000) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
+			while ((crawlerCount < 4) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
 				crawler.startCrawling();
 				tempDS = crawler.getCurrentDS();
 				if (tempDS == null) 

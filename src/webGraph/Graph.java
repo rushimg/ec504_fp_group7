@@ -305,16 +305,34 @@ public int getNextNodeToIndex(String peerName){
 	 * creates a node and adds it to the Map
 	 * Then sets the URL and pageName and returns the index to that node
 	 */
-	public int addNode(String URL, String pageName){
+	public int addNode(String URL){
 		currentIndex++;
 		URLnode tempNode = new URLnode(currentIndex);
 		tempNode.setPageURL(URL);
-		tempNode.setPageName(pageName);
 		Map.add(tempNode);
 		URLMap.put(URL, currentIndex);
-		NameMap.put(pageName, currentIndex);
-		return currentIndex;
+		return currentIndex;	
+		
 	}
+	public int addNode(String URL, String pageName){
+		if(URLMap.get(URL) != null){
+			int index = URLMap.get(URL);
+			Map.get(index).setPageName(pageName);
+			NameMap.put(pageName, index);
+			return index;
+		}
+		else{
+			currentIndex++;
+			URLnode tempNode = new URLnode(currentIndex);
+			tempNode.setPageURL(URL);
+			tempNode.setPageName(pageName);
+			Map.add(tempNode);
+			URLMap.put(URL, currentIndex);
+			NameMap.put(pageName, currentIndex);
+			return currentIndex;
+		}
+	}
+	//region shut up
 	public int addNode(String URL, String pageName, int HTMLindex){
 		currentIndex++;
 		URLnode tempNode = new URLnode(currentIndex);
@@ -441,7 +459,7 @@ public int getNextNodeToIndex(String peerName){
 		
 	}
 	
-	
+	//endregion
 	/** addLink
 	 * adds a connection from one node to another. Also increments the page rank of the other page
 	 * 
@@ -461,16 +479,22 @@ public int getNextNodeToIndex(String peerName){
 			int index = URLMap.get(URL_orig);
 			addLink(index,linkedToNode);			
 		}
-		else
-			System.out.println("addLink Error::Cannot find URL! Link not added.");				
+		else{
+			this.addNode(URL_orig);
+			this.addLink(URL_orig, linkedToNode);
+			//System.out.println("addLink Error::Cannot find URL! Link not added.");		
+		}
 	}
 	public void addLink(int originalNode, String URL_linked){
 		if(URLMap.get(URL_linked) != null){
 			int index = URLMap.get(URL_linked);
 			addLink(originalNode,index);			
 		}
-		//else
-			//System.out.println("addLink Error::Cannot find URL! Link not added.");				
+		else{
+			this.addNode(URL_linked);
+			this.addLink(originalNode, URL_linked);
+		//	System.out.println("addLink Error::Cannot find URL! Link not added.");		
+		}
 	}
 	public void addLink(String URL_orig, String URL_linked){
 		if(URLMap.get(URL_orig) != null && URLMap.get(URL_linked) != null){
