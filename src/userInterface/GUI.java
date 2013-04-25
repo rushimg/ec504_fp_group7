@@ -53,7 +53,7 @@ public class GUI{
 			crawler.setPrintOutput(true);
 			simpleDS tempDS = new simpleDS();
 			int crawlerCount = 0;
-			while (crawlerCount < 30) {		//test for only two nodes in this case, change it to "> 0" for full search
+			while ((crawlerCount < 1000) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
 				crawler.startCrawling();
 				tempDS = crawler.getCurrentDS();
 				if (tempDS == null) 
@@ -63,6 +63,7 @@ public class GUI{
 				//TODO: addLink() not fully test, ignore temporarily
 				//TODO: Boring notice frequently: "addLink Error::Cannot find URL! Link not added."
 			}
+			System.out.println("number of websites to grab in queue: " + crawler.getUrlQueue().size());
 			
 			/*****Crawler <-> Graph Interface ******/
 				
@@ -81,8 +82,6 @@ public class GUI{
 				while (!indexPriorityQueue.isEmpty()) {
 					Index newIndex = indexPriorityQueue.poll();
 					indexDS.Store(newIndex.key, newIndex.frequency, nextIndex);
-					if (newIndex.key.equals("time"))
-						System.out.println("index debug: " + newIndex.key + " " + newIndex.frequency + " " + nextIndex) ;
 				}
 				nextIndex++;
 			}			

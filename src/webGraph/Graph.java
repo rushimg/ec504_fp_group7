@@ -329,8 +329,11 @@ public int getNextNodeToIndex(String peerName){
 	public void addNode(simpleDS newDS){
 		int index = addNode(newDS.getPageURL(), newDS.getPageTitle());
 		Map.get(index).setText(newDS.getRawText());
-		for(int jj = 0; jj < newDS.getLinksList().size(); jj++)
-			addLink(index, newDS.getLinksList().get(jj));		
+		if (newDS.getLinksList() != null) {
+			for(int jj = 0; jj < newDS.getLinksList().size(); jj++) {
+				addLink(index, newDS.getLinksList().get(jj));		
+			}
+		}
 	}
 	
 	/** findNodeURL

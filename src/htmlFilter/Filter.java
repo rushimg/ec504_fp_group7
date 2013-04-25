@@ -129,6 +129,8 @@ public class Filter {
     public void parse(String filteredText) {
     	freq.clear();	//clear hashmap and priorityQ before parse again
     	freqPQ.clear();
+    	if (filteredText == null)
+    		return;
     	filteredText = filteredText.toLowerCase();
         String subStr;      //word parsed
         int strLen = filteredText.length();     //length of filteredText
