@@ -137,6 +137,8 @@ public class Filter {
         for (int i = 0;i < strLen;i++) {
             if (isUseful(filteredText.charAt(i))) { //judge for useful information
                 int subStrEnd = i + 1;          //end index of the word
+                if (subStrEnd >= strLen)
+                	return;
                 while (isUseful(filteredText.charAt(subStrEnd))) {     //looking for the end of the subString
                     if (subStrEnd == strLen - 1) {      //to avoid indexOutOfBoundException
                         subStr = filteredText.substring(i, subStrEnd);  //edge case - at the end of the string
