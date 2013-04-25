@@ -21,10 +21,10 @@ public class TestSearch {
 		testData.Store("technology", 2, 90);
 		testData.Store("teaa", 3, 80);
 		testData.Store("technology", 2, 100);
-		
+
 		testData.Store("timer", 3, 85);
 		testData.Store("tadaad", 1, 70);
-		
+
 		testData.Store(data2, 4, 60);
 		testData.Store(data2, 4, 70);
 		testData.Store(data2, 4, 80);
@@ -37,17 +37,17 @@ public class TestSearch {
 		ArrayList<Integer> retData1=new ArrayList<Integer>();
 		ArrayList<Integer> retData2=new ArrayList<Integer>();
 		ArrayList<Integer> retData3=new ArrayList<Integer>();
-		
+
 		ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream("DS.txt"));
 		outStream.writeObject(testData);
 		outStream.close();
-		
+
 		ObjectInputStream inStream = new ObjectInputStream(new FileInputStream("DS.txt"));
 		StoreAndSearch decoded = (StoreAndSearch) inStream.readObject();
-		
-		
+
+
 		 retData1 = testData.Search("technology");
-		 
+
 		 retData2 = decoded.Search(data2);
 		 retData3 = decoded.Search(data3);
 
@@ -56,7 +56,7 @@ public class TestSearch {
 		System.out.println(retData3);
 
 
-		
+
 	}
 
 }

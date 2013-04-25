@@ -12,11 +12,11 @@ public class StoreAndSearch implements Serializable {
 		private ArrayList<Integer> Freq = new ArrayList<Integer>();
 		private ArrayList<Integer> Index = new ArrayList<Integer>();
 	}
-	
+
 	// hashmap for  string whose length is  less or equal to 3
 	private static HashMap<String, Data> MapShort = new HashMap<String, Data>();
-	
-	
+
+
 	private static ArrayList<ArrayList<ArrayList<HashMap<String, Data>>>> Dic2 = new ArrayList<ArrayList<ArrayList<HashMap<String, Data>>>>();
 	//private static ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
 	//private static ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
@@ -34,7 +34,7 @@ public class StoreAndSearch implements Serializable {
 		ArrayList<HashMap<String, Data>> Dic44 = new ArrayList<HashMap<String, Data>>();
 		for (int i = 0; i < 96; i++) {
 			Dic44.add(mapTest);
-		
+
 		}
 		for (int i = 0; i < 96; i++) {
 			Dic33.add(Dic44);
@@ -54,7 +54,7 @@ public class StoreAndSearch implements Serializable {
 		Data InfoShort = new Data();
 		Info.Freq.add(Freq);
 		Info.Index.add(Index);
-		
+
 if (Check(WordStore) == 0) {
 			ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
 			ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
@@ -69,17 +69,17 @@ if (Check(WordStore) == 0) {
 				Dic3.add(Dic4);
 			}
 			HashMap<String, Data> Map = new HashMap<String, Data>();
-			
+
     if (sz > 3) {
 				C1 = WordStore.charAt(0);
 				C2 = WordStore.charAt(1);
 				C3 = WordStore.charAt(2);
-				
+
 				SubStr = WordStore.substring(3, sz);
 				String Sub3=WordStore.substring(0, 3);
 				String Sub2=WordStore.substring(0, 2);
 				String Sub1=WordStore.substring(0, 1);
-				
+
 				//System.out.println(check3);
 				if(!check1.contains(Sub1))
 				{
@@ -95,7 +95,7 @@ if (Check(WordStore) == 0) {
 				else {
 					    if(check2.contains(Sub2)){
 					    	if(check3.contains(Sub3)){
-					    		
+
 					    		Dic2.get(C1 - C).get(C2 - C).get(C3 - C).put(SubStr, Info);
 					    	}
 					    	else{
@@ -103,9 +103,9 @@ if (Check(WordStore) == 0) {
 									check3.add(Sub3);
 
 					    	}
-					    	
+
 					    }
-					    	
+
 					    else {
 					    	Map.put(SubStr, Info);
 					 		ArrayList<HashMap<String, Data>> Dic4_temp = new ArrayList<HashMap<String, Data>>();
@@ -118,10 +118,10 @@ if (Check(WordStore) == 0) {
 							check3.add(Sub3);
 
 					    }
-					
+
 				}
-					     
-				
+
+
 
 			} 
             /*short word*/
@@ -132,7 +132,7 @@ if (Check(WordStore) == 0) {
 
 			 			}
 }
-	
+
 	else if (Check(WordStore) != 0) {
 			if (sz > 3) {
 				char C7 = WordStore.charAt(0);
@@ -147,14 +147,14 @@ if (Check(WordStore) == 0) {
 
 			         }
 			else {
-				
+
 				MapShort.get(WordStore).Index.add(Index);
 				MapShort.get(WordStore).Freq.add(Freq);
 			      }
 		                            }
-	
+
 }
-	
+
 
 	public ArrayList<Integer> Search(String WordSearch) {
 		String SubStr;
@@ -188,7 +188,7 @@ if (Check(WordStore) == 0) {
 
 				while (itr.hasNext()) {
 					int a = itr.next();
-					
+
 					if(CheckFreq.contains(a)!=true){
 					for (int i = 0; i < ReturnFreq.size(); i++)
 					{
@@ -196,14 +196,14 @@ if (Check(WordStore) == 0) {
 						int c = ReturnIndex.get(i);
 						if (b == a) {
 							IndexCopy.add(c);
-							
+
 						}
-						
+
 					}
 					CheckFreq.add(a);
 
 				}
-				
+
 				}
 			}
 
@@ -229,7 +229,7 @@ if (Check(WordStore) == 0) {
 					{
 						int b = ReturnFreq.get(i);
 						int c = ReturnIndex.get(i);
-						
+
 						if (b == a) {
 							IndexCopy.add(c);
 						}
