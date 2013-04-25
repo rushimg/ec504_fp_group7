@@ -1,6 +1,7 @@
 package webGraph;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.Serializable;
 import java.lang.Math;
 import java.util.Stack;
 import basicWebCrawler.simpleDS;
@@ -10,7 +11,7 @@ import basicWebCrawler.simpleDS;
 import customJavaFunctionality.Triple;
 
 //This is where the magic happens
-public class Graph {
+public class Graph implements Serializable{
 	public ArrayList<URLnode> Map;		//web map
 	private int currentIndex;	//index of the last added node
 	//private FullFunctionMatching strmat;

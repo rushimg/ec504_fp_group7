@@ -1,11 +1,12 @@
 package webGraph;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /* URLnode
  * Defines the information stored in the node of the graph
  * 
  */
-public class URLnode {
+public class URLnode implements Serializable {
 	private int NodeIndex;	//self-reference of node to its position in the full graph list
 	private String pageName;	//name of the page stored in the node - identified by information contained between <title> ... </title> tags
 	private String pageURL; 	//URL of the page stored in the node

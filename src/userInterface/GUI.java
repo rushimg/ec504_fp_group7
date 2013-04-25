@@ -2,7 +2,14 @@
 
 package userInterface;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.PriorityQueue;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -21,7 +28,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import webGraph.Graph;
 import webGraph.URLnode;
+import dataStruct.IndexStruct;
 import dataStruct.StoreAndSearch;
+import dataStruct.StoreIntoFile;
 import basicWebCrawler.Crawler;
 import basicWebCrawler.simpleDS;
 import htmlFilter.Filter;
@@ -52,7 +61,7 @@ public class GUI{
 	 */
 	public static void main(String[] args) {
 		try {
-			Crawler crawler = new Crawler();
+			/*Crawler crawler = new Crawler();
 			crawler.setPrintOutput(true);
 			simpleDS tempDS = new simpleDS();
 			int crawlerCount = 0;
@@ -70,12 +79,13 @@ public class GUI{
 			
 			/*****Crawler <-> Graph Interface ******/
 				
-			int nextIndex = 0;  //not -1 for initialization
+			/*int nextIndex = 0;  //not -1 for initialization
 			PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
 			int graphSize = net.getIndexSize();
 			
 			//TODO: didn't use peerName here
 			//TODO: didn't use getNextNodeToIndex() here, add another getIndexSize() in graph.java to test here
+			StoreIntoFile tempStoreIntoFile = new StoreIntoFile();
 			while(nextIndex <= graphSize){
 				//System.out.println(nextIndex);
 				//nextIndex = net.getNextNodeToIndex(peerName);
@@ -84,10 +94,46 @@ public class GUI{
 				indexPriorityQueue = filt.getPriorityQueue();
 				while (!indexPriorityQueue.isEmpty()) {
 					Index newIndex = indexPriorityQueue.poll();
-					indexDS.Store(newIndex.key, newIndex.frequency, nextIndex);
+					//indexDS.Store(newIndex.key, newIndex.frequency, nextIndex);
+					IndexStruct tempIndexStruct = new IndexStruct(newIndex.frequency, nextIndex);
+					if (tempStoreIntoFile.myHashMap.get(newIndex.key) == null) {
+						ArrayList<IndexStruct> tempArrayList = new ArrayList<IndexStruct>();
+						tempArrayList.add(tempIndexStruct);
+						tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
+					}
+					else {
+						ArrayList<IndexStruct> tempArrayList = tempStoreIntoFile.myHashMap.get(newIndex.key);
+						tempArrayList.add(tempIndexStruct);
+						tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
+					}
 				}
 				nextIndex++;
 			}			
+			
+			ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream("DS.txt"));
+			outStream.writeObject(tempStoreIntoFile);
+			outStream.close();
+			ObjectOutputStream outStream1 = new ObjectOutputStream(new FileOutputStream("Graph.txt"));
+			outStream1.writeObject(net);
+			outStream1.close();*/
+			
+			ObjectInputStream inStream = new ObjectInputStream(new FileInputStream("DS.txt"));
+			StoreIntoFile readFile = (StoreIntoFile) inStream.readObject();
+			ObjectInputStream inStream1 = new ObjectInputStream(new FileInputStream("Graph.txt"));
+			net = (Graph) inStream1.readObject();
+			inStream.close();
+			inStream1.close();
+			
+			Iterator<Map.Entry<String, ArrayList<IndexStruct>>> freqIter = readFile.myHashMap.entrySet().iterator();
+	        while (freqIter.hasNext()) {
+	            Map.Entry<String, ArrayList<IndexStruct>> tempEntry = freqIter.next();
+	            String tempWord = tempEntry.getKey();
+	            ArrayList<IndexStruct> tempArrayList = tempEntry.getValue();
+	            for (IndexStruct tempIndexStruct : tempArrayList) {
+	            	indexDS.Store(tempWord, tempIndexStruct.frequency, tempIndexStruct.nodeIndex);
+		            //System.out.println(tempWord + " : " + tempIndexStruct.frequency + " " + tempIndexStruct.nodeIndex);
+	            }
+	        }
 			
 			/**
 			 * People who want to run and design GUI conveniently may want to install eclipse WindowsBuilder
@@ -110,6 +156,8 @@ public class GUI{
 				URLnode tempNode = net.Map.get(resultList.get(i));
 				StyleRange titleStyleRange = new StyleRange();
 				titleStyleRange.start = 0;
+				if (tempNode.getPageName() == null)
+					continue;
 				titleStyleRange.length = tempNode.getPageName().length();
 				titleStyleRange.font = new Font(display, "Arial", 9, SWT.BOLD);
 				titleStyleRange.underline = true;
