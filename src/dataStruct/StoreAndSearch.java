@@ -2,6 +2,8 @@ package dataStruct;
 import java.util.*;
 import java.io.*;
 
+import com.sun.org.apache.xml.internal.security.Init;
+
 
 public class StoreAndSearch implements Serializable {
 	/* define data type */
@@ -26,6 +28,10 @@ public class StoreAndSearch implements Serializable {
 	private static ArrayList<String> check2=new ArrayList<String>();
 	private static ArrayList<String> check1=new ArrayList<String>();
 	public StoreAndSearch() {
+		init();
+	}
+	
+	public void init() {
 		HashMap<String, Data> mapTest = new HashMap<String, Data>(); //
 		Data dataTest = new Data();
 		String strTest = " ";
@@ -43,6 +49,20 @@ public class StoreAndSearch implements Serializable {
 			Dic2.add(Dic33);
 		}
 	}
+	
+	/**
+	 * clear whole data structure for load file again
+	 */
+	public void clear() {
+		MapShort.clear();
+		Dic2.clear();
+		ReturnIndex.clear();
+		ReturnFreq.clear();
+		check1.clear();
+		check2.clear();
+		check3.clear();
+		init();
+	}
 
 	/* define method for store */
      
@@ -55,7 +75,7 @@ public class StoreAndSearch implements Serializable {
 		Info.Freq.add(Freq);
 		Info.Index.add(Index);
 
-if (Check(WordStore) == 0) {
+		if (Check(WordStore) == 0) {
 			ArrayList<ArrayList<HashMap<String, Data>>> Dic3 = new ArrayList<ArrayList<HashMap<String, Data>>>();
 			ArrayList<HashMap<String, Data>> Dic4 = new ArrayList<HashMap<String, Data>>();
 			HashMap<String, Data> mapTest = new HashMap<String, Data>(); //

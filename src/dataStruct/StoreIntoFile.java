@@ -8,7 +8,6 @@ public class StoreIntoFile implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 	public HashMap<String, ArrayList<IndexStruct> > myHashMap;
 	public StoreIntoFile() {
 		myHashMap = new HashMap<String, ArrayList<IndexStruct> >();

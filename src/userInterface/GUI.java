@@ -2,15 +2,20 @@
 
 package userInterface;
 
+import java.awt.Window;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.PriorityQueue;
+import javax.swing.text.BadLocationException;
+
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -25,7 +30,6 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import webGraph.Graph;
 import webGraph.URLnode;
 import dataStruct.IndexStruct;
@@ -37,6 +41,8 @@ import htmlFilter.Filter;
 import htmlFilter.Filter.Index;
 import org.eclipse.swt.widgets.Label;
 
+import com.sun.java.swing.plaf.windows.resources.windows;
+
 public class GUI{
 	private Text text;
 	private Label resultCountLabel;
@@ -46,108 +52,115 @@ public class GUI{
 	private static int maxPageNumber = 1;
 	private static int pageNumber = 1;
 	private static String peerName;
-	private static Graph net = new Graph();
+	private Graph net = new Graph();
 	private static Filter filt = new Filter();
-	private static StoreAndSearch indexDS = new StoreAndSearch();
+	private StoreAndSearch indexDS = new StoreAndSearch();
 	private static GUI gui = new GUI();
 	private static ArrayList<Integer> resultList = new ArrayList<Integer>();
 	private static Display display;
 	private static Shell shell;
 	private static Label pageLabel;
+	private static Button crawlButton;
+	private static Button loadButton;
+	private static Button searchButton;
 	
 	/**
 	 * Launch the application.
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		try {
-			/*Crawler crawler = new Crawler();
-			crawler.setPrintOutput(true);
-			simpleDS tempDS = new simpleDS();
-			int crawlerCount = 0;
-			while ((crawlerCount < 100) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
-				crawler.startCrawling();
-				tempDS = crawler.getCurrentDS();
-				if (tempDS == null) 
-					break;
-				net.addNode(tempDS);
-				crawlerCount++;
-				//TODO: addLink() not fully test, ignore temporarily
-				//TODO: Boring notice frequently: "addLink Error::Cannot find URL! Link not added."
-			}
-			System.out.println("number of websites to grab in queue: " + crawler.getUrlQueue().size());
-			
-			/*****Crawler <-> Graph Interface ******/
-				
-			/*int nextIndex = 0;  //not -1 for initialization
-			PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
-			int graphSize = net.getIndexSize();
-			
-			//TODO: didn't use peerName here
-			//TODO: didn't use getNextNodeToIndex() here, add another getIndexSize() in graph.java to test here
-			StoreIntoFile tempStoreIntoFile = new StoreIntoFile();
-			while(nextIndex <= graphSize){
-				//System.out.println(nextIndex);
-				//nextIndex = net.getNextNodeToIndex(peerName);
-				filt.parse(net.Map.get(nextIndex).getText());
-				filt.storeInOrder();
-				indexPriorityQueue = filt.getPriorityQueue();
-				while (!indexPriorityQueue.isEmpty()) {
-					Index newIndex = indexPriorityQueue.poll();
-					//indexDS.Store(newIndex.key, newIndex.frequency, nextIndex);
-					IndexStruct tempIndexStruct = new IndexStruct(newIndex.frequency, nextIndex);
-					if (tempStoreIntoFile.myHashMap.get(newIndex.key) == null) {
-						ArrayList<IndexStruct> tempArrayList = new ArrayList<IndexStruct>();
-						tempArrayList.add(tempIndexStruct);
-						tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
-					}
-					else {
-						ArrayList<IndexStruct> tempArrayList = tempStoreIntoFile.myHashMap.get(newIndex.key);
-						tempArrayList.add(tempIndexStruct);
-						tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
-					}
-				}
-				nextIndex++;
-			}			
-			
-			ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream("DS.txt"));
-			outStream.writeObject(tempStoreIntoFile);
-			outStream.close();
-			ObjectOutputStream outStream1 = new ObjectOutputStream(new FileOutputStream("Graph.txt"));
-			outStream1.writeObject(net);
-			outStream1.close();*/
-			
-			ObjectInputStream inStream = new ObjectInputStream(new FileInputStream("DS.txt"));
-			StoreIntoFile readFile = (StoreIntoFile) inStream.readObject();
-			ObjectInputStream inStream1 = new ObjectInputStream(new FileInputStream("Graph.txt"));
-			net = (Graph) inStream1.readObject();
-			inStream.close();
-			inStream1.close();
-			
-			Iterator<Map.Entry<String, ArrayList<IndexStruct>>> freqIter = readFile.myHashMap.entrySet().iterator();
-	        while (freqIter.hasNext()) {
-	            Map.Entry<String, ArrayList<IndexStruct>> tempEntry = freqIter.next();
-	            String tempWord = tempEntry.getKey();
-	            ArrayList<IndexStruct> tempArrayList = tempEntry.getValue();
-	            for (IndexStruct tempIndexStruct : tempArrayList) {
-	            	indexDS.Store(tempWord, tempIndexStruct.frequency, tempIndexStruct.nodeIndex);
-		            //System.out.println(tempWord + " : " + tempIndexStruct.frequency + " " + tempIndexStruct.nodeIndex);
-	            }
-	        }
-			
-			/**
-			 * People who want to run and design GUI conveniently may want to install eclipse WindowsBuilder
-			 *  plugin from: http://www.eclipse.org/windowbuilder/
-			 */
-			gui.open();
-			//TODO: Interaction with back-end
-			//TODO: parse input text with "AND" and "OR" and their implementation for sending different request and combining result
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public static void main(String[] args) {									
+		/**
+		 * People who want to run and design GUI conveniently may want to install eclipse WindowsBuilder
+		 *  plugin from: http://www.eclipse.org/windowbuilder/
+		 */
+		gui.open();
+		//TODO: parse input text with "AND" and "OR" and their implementation for sending different request and combining result
 	}
 	
-	//update result according to current page number
+	/**
+	 * crawl websites in bu.edu domain
+	 * @param count - maximum number of websites to crawl
+	 */
+	public void crawlWebsites(int count) throws IOException, BadLocationException {
+		Crawler crawler = new Crawler();
+		crawler.setPrintOutput(true);
+		Graph graphNetGraph = new Graph();
+		simpleDS tempDS = new simpleDS();
+		int crawlerCount = 0;
+		while ((crawlerCount < count) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
+			crawler.startCrawling();
+			tempDS = crawler.getCurrentDS();
+			if (tempDS == null) 
+				break;
+			graphNetGraph.addNode(tempDS);
+			crawlerCount++;
+			//TODO: addLink() not fully test, ignore temporarily
+			//TODO: Boring notice frequently: "addLink Error::Cannot find URL! Link not added."
+		}
+		System.out.println("number of websites to grab in queue: " + crawler.getUrlQueue().size());
+		
+		int nextIndex = 0;  //not -1 for initialization
+		PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
+		int graphSize = graphNetGraph.getIndexSize();
+		
+		//TODO: didn't use peerName here
+		//TODO: didn't use getNextNodeToIndex() here, add another getIndexSize() in graph.java to test here
+		StoreIntoFile tempStoreIntoFile = new StoreIntoFile();
+		while(nextIndex <= graphSize){
+			filt.parse(graphNetGraph.Map.get(nextIndex).getText());
+			filt.storeInOrder();
+			indexPriorityQueue = filt.getPriorityQueue();
+			while (!indexPriorityQueue.isEmpty()) {
+				Index newIndex = indexPriorityQueue.poll();
+				IndexStruct tempIndexStruct = new IndexStruct(newIndex.frequency, nextIndex);
+				if (tempStoreIntoFile.myHashMap.get(newIndex.key) == null) {
+					ArrayList<IndexStruct> tempArrayList = new ArrayList<IndexStruct>();
+					tempArrayList.add(tempIndexStruct);
+					tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
+				}
+				else {
+					ArrayList<IndexStruct> tempArrayList = tempStoreIntoFile.myHashMap.get(newIndex.key);
+					tempArrayList.add(tempIndexStruct);
+					tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
+				}
+			}
+			nextIndex++;
+		}			
+		ObjectOutputStream outStream = new ObjectOutputStream(new FileOutputStream("DS.txt"));
+		outStream.writeObject(tempStoreIntoFile);
+		outStream.close();
+		ObjectOutputStream outStream1 = new ObjectOutputStream(new FileOutputStream("Graph.txt"));
+		outStream1.writeObject(graphNetGraph);
+		outStream1.close();
+	}
+	
+	/**
+	 * load graph and index data structure into memory
+	 */
+	public void loadGraphAndIndex() throws FileNotFoundException, IOException, ClassNotFoundException {
+		ObjectInputStream inStream = new ObjectInputStream(new FileInputStream("DS.txt"));
+		StoreIntoFile readFile = (StoreIntoFile) inStream.readObject();
+		ObjectInputStream inStream1 = new ObjectInputStream(new FileInputStream("Graph.txt"));
+		net = (Graph) inStream1.readObject();
+		inStream.close();
+		inStream1.close();
+		
+		Iterator<Map.Entry<String, ArrayList<IndexStruct>>> freqIter = readFile.myHashMap.entrySet().iterator();
+        indexDS.clear();
+        while (freqIter.hasNext()) {
+            Map.Entry<String, ArrayList<IndexStruct>> tempEntry = freqIter.next();
+            String tempWord = tempEntry.getKey();
+            ArrayList<IndexStruct> tempArrayList = tempEntry.getValue();
+            for (IndexStruct tempIndexStruct : tempArrayList) {
+            	indexDS.Store(tempWord, tempIndexStruct.frequency, tempIndexStruct.nodeIndex);
+	            //System.out.println(tempWord + " : " + tempIndexStruct.frequency + " " + tempIndexStruct.nodeIndex);
+            }
+        }
+	}
+	
+	/**
+	 * update result according to current page number
+	 */
 	public void updatePage() {
 		int beginIndex = (pageNumber - 1) * 6;
 		int endIndex = beginIndex + 5;
@@ -186,27 +199,28 @@ public class GUI{
 		display = Display.getDefault();
 		shell = new Shell(display, SWT.MIN);
 		shell.setModified(true);
-		shell.setSize(1300, 700);
+		shell.setSize(1300, 720);
 		shell.setText("EC504_Group7_P2P");
 		shell.setLocation(0, 0);
 		shell.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
 		shell.setImage(new Image(display, "icon.ico"));
 		
 		final Browser browser = new Browser(shell, SWT.BORDER);
-		browser.setBounds(259, 10, 1015, 642);
+		browser.setBounds(262, 10, 1025, 672);
 		browser.setUrl("http://www.bu.edu");
 		//Filter filter = new Filter();
 		//browser.setText(filter.getHTML("http://www.bu.edu/ece"));
 		
 		Composite composite = new Composite(shell, SWT.NONE);
-		composite.setBounds(10, 10, 243, 642);
+		composite.setBounds(10, 10, 243, 672);
 		composite.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
 		
 		text = new Text(composite, SWT.BORDER);
 		text.setBounds(3, 3, 236, 31);
 		text.setFont(new Font(display, "Arial", 14, SWT.NORMAL));
 		
-		Button searchButton = new Button(composite, SWT.NONE);
+		searchButton = new Button(composite, SWT.NONE);
+		searchButton.setEnabled(false);
 		searchButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -242,31 +256,31 @@ public class GUI{
 				updatePage();
 			}
 		});
-		searchButton.setBounds(5, 42, 91, 31);
+		searchButton.setBounds(6, 42, 75, 31);
 		searchButton.setText("Search");
 
 		StyledText styledText_0 = new StyledText(composite, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		styledText_0.setBounds(3, 80, 206, 84);	
+		styledText_0.setBounds(3, 109, 206, 84);	
 		styledTextArray[0] = styledText_0;
 		
 		StyledText styledText_1 = new StyledText(composite, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		styledText_1.setBounds(3, 168, 206, 84);
+		styledText_1.setBounds(3, 197, 206, 84);
 		styledTextArray[1] = styledText_1;
 		
 		StyledText styledText_2 = new StyledText(composite, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		styledText_2.setBounds(3, 256, 206, 84);
+		styledText_2.setBounds(3, 285, 206, 84);
 		styledTextArray[2] = styledText_2;
 		
 		StyledText styledText_3 = new StyledText(composite, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		styledText_3.setBounds(3, 344, 206, 84);
+		styledText_3.setBounds(3, 373, 206, 84);
 		styledTextArray[3] = styledText_3;
 		
 		StyledText styledText_4 = new StyledText(composite, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		styledText_4.setBounds(3, 432, 206, 84);
+		styledText_4.setBounds(3, 461, 206, 84);
 		styledTextArray[4] = styledText_4;
 		
 		StyledText styledText_5 = new StyledText(composite, SWT.BORDER|SWT.WRAP|SWT.V_SCROLL);
-		styledText_5.setBounds(3, 520, 206, 84);
+		styledText_5.setBounds(3, 549, 206, 84);
 		styledTextArray[5] = styledText_5;
 		
 		Button button_0 = new Button(composite, SWT.NONE);
@@ -280,7 +294,7 @@ public class GUI{
 				}
 			}
 		});
-		button_0.setBounds(215, 80, 24, 84);	
+		button_0.setBounds(215, 109, 24, 84);	
 		button_0.setText(">>");		
 		buttonsArray[0] = button_0;
 		
@@ -296,7 +310,7 @@ public class GUI{
 			}
 		});
 		button_1.setText(">>");
-		button_1.setBounds(215, 168, 24, 84);
+		button_1.setBounds(215, 197, 24, 84);
 		buttonsArray[1] = button_1;
 		
 		Button button_2 = new Button(composite, SWT.NONE);
@@ -311,7 +325,7 @@ public class GUI{
 			}
 		});
 		button_2.setText(">>");
-		button_2.setBounds(215, 256, 24, 84);
+		button_2.setBounds(215, 285, 24, 84);
 		buttonsArray[2] = button_2;
 		
 		Button button_3 = new Button(composite, SWT.NONE);
@@ -327,7 +341,7 @@ public class GUI{
 		});
 		button_3.setText(">>");
 		button_3.setVisible(true);
-		button_3.setBounds(215, 344, 24, 84);
+		button_3.setBounds(215, 373, 24, 84);
 		buttonsArray[3] = button_3;
 		
 		Button button_4 = new Button(composite, SWT.NONE);
@@ -343,7 +357,7 @@ public class GUI{
 		});
 		button_4.setText(">>");
 		button_4.setVisible(true);
-		button_4.setBounds(215, 432, 24, 84);
+		button_4.setBounds(215, 461, 24, 84);
 		buttonsArray[4] = button_4;
 		
 		Button button_5 = new Button(composite, SWT.NONE);
@@ -359,18 +373,19 @@ public class GUI{
 		});
 		button_5.setText(">>");
 		button_5.setVisible(true);
-		button_5.setBounds(215, 520, 24, 84);
+		button_5.setBounds(215, 549, 24, 84);
 		buttonsArray[5] = button_5;
 		
 	    resultCountLabel = new Label(composite, SWT.RIGHT);
+	    resultCountLabel.setAlignment(SWT.LEFT);
 		resultCountLabel.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 		resultCountLabel.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
-		resultCountLabel.setBounds(120, 44, 117, 25);
+		resultCountLabel.setBounds(3, 78, 117, 25);
 		resultCountLabel.setText(" " + resultCount + " found");
 		resultCountLabel.setFont(new Font(display, "Arial", 14, SWT.NORMAL));
 		
 		pageLabel = new Label(composite, SWT.CENTER);
-		pageLabel.setBounds(102, 620, 45, 20);
+		pageLabel.setBounds(96, 650, 45, 20);
 		pageLabel.setFont(new Font(display, "Arial", 12, SWT.BOLD));
 		pageLabel.setText(String.valueOf(pageNumber));
 		
@@ -385,7 +400,7 @@ public class GUI{
 				}
 			}
 		});
-		leftPageButton.setBounds(51, 617, 45, 25);
+		leftPageButton.setBounds(45, 647, 45, 25);
 		leftPageButton.setText("<");
 		leftPageButton.setFont(new Font(display, "Arial Unicode", 12, SWT.NORMAL));
 		
@@ -401,8 +416,61 @@ public class GUI{
 			}
 		});
 		rightPageButton.setText(">");
-		rightPageButton.setBounds(153, 617, 45, 25);
+		rightPageButton.setBounds(147, 647, 45, 25);
 		rightPageButton.setFont(new Font(display, "Arial Unicode", 12, SWT.NORMAL));
+		
+		crawlButton = new Button(composite, SWT.NONE);
+		crawlButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+			    int countLimit = 0;
+				if (MessageDialog.openConfirm(shell, "Crawling Confirm", 
+						"Crawling may take a long time, do you still want to continue crawling?")) {
+					InputDialog inputDialog = new InputDialog(shell, "Crawling size request", 
+							"please input the maximum number of websites to crawl: ", "20", null);
+					inputDialog.open();
+				    try {
+				    	countLimit = Integer.valueOf(inputDialog.getValue());
+				    } catch (NumberFormatException nfe) {
+				    	MessageDialog.openInformation(shell, "warning", "Your input has to be a positive integer, this operation failed.");
+				    	return;
+				    }
+				    if (countLimit <= 0) {
+				    	MessageDialog.openInformation(shell, "warning", "Your input has to be a positive integer, this operation failed.");
+				    	return;
+				    }
+				}
+				else {
+					return;
+				}
+				try {
+					crawlWebsites(countLimit);
+					MessageDialog.openInformation(shell, "Congratulations", "Crawling completed! You can 'Load' now to update original data.");
+					loadButton.setEnabled(true);
+				} catch (IOException | BadLocationException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		crawlButton.setText("Crawl");
+		crawlButton.setBounds(84, 42, 75, 31);
+		
+		loadButton = new Button(composite, SWT.NONE);
+		loadButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					loadGraphAndIndex();
+					searchButton.setEnabled(true);
+					loadButton.setEnabled(false);
+				} catch (ClassNotFoundException
+						| IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		loadButton.setText("Load");
+		loadButton.setBounds(162, 42, 75, 31);
 
 		shell.open();
 		shell.layout();
