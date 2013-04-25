@@ -32,6 +32,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import webGraph.Graph;
 import webGraph.URLnode;
+import basicWebCrawler.CrawlerThreading;
 import dataStruct.IndexStruct;
 import dataStruct.StoreAndSearch;
 import dataStruct.StoreIntoFile;
@@ -64,6 +65,12 @@ public class GUI {
 	private static Button crawlButton;
 	private static Button loadButton;
 	private static Button searchButton;
+	public ArrayList<simpleDS> GraphQueue = new ArrayList<simpleDS>();
+	public ArrayList<Integer> FilterIndexQueue = new ArrayList<Integer>();
+	private Graph graphNetGraph = new Graph();
+	PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
+	int graphSize = graphNetGraph.getIndexSize();
+	StoreIntoFile tempStoreIntoFile = new StoreIntoFile();
 	//endregion
 	
 	/**
@@ -89,46 +96,95 @@ public class GUI {
 	 * @param count
 	 *            - maximum number of websites to crawl
 	 */
-	public void crawlWebsites(int count) throws IOException,
-			BadLocationException {
+	public void addNodeToGraph(simpleDS ds){
+		graphNetGraph.addNode(ds);
+	}
+	
+	public void addToFiltQueue(int ind){
+		FilterIndexQueue.add(ind);
+	}
+	
+	public int quickSearchTheGraph(){
+		return graphNetGraph.quickSearch(peerName);
+	}
+	
+	public simpleDS getOffQueue(){
+		if(GraphQueue.size()!=0){
+			simpleDS temp = GraphQueue.get(0);
+			GraphQueue.remove(0);
+			return temp;
+		}
+		return null;
+	}
+	
+	public int getOffFiltQueue(){
+		if(FilterIndexQueue.size() != 0){
+			int ind = FilterIndexQueue.get(0);
+			FilterIndexQueue.remove(0);
+			return ind;
+		}
+		return -1;
+	}
+	
+	public void DoFilterStuff(int index){
+		filt.parse(graphNetGraph.Map.get(index).getText());
+		filt.storeInOrder();
+		indexPriorityQueue = filt.getPriorityQueue();
+		while (!indexPriorityQueue.isEmpty()) {
+			Index newIndex = indexPriorityQueue.poll();
+			IndexStruct tempIndexStruct = new IndexStruct(newIndex.frequency, index);
+			if (tempStoreIntoFile.myHashMap.get(newIndex.key) == null) {
+				ArrayList<IndexStruct> tempArrayList = new ArrayList<IndexStruct>();
+				tempArrayList.add(tempIndexStruct);
+				tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
+			} else {
+				ArrayList<IndexStruct> tempArrayList = tempStoreIntoFile.myHashMap.get(newIndex.key);
+				tempArrayList.add(tempIndexStruct);
+				tempStoreIntoFile.myHashMap.put(newIndex.key, tempArrayList);
+			}
+		}
+		
+		
+		
+	}
+	
+	public void crawlWebsites(int count) throws IOException, BadLocationException {
 		Crawler crawler = new Crawler();
 		crawler.setPrintOutput(true);
-		Graph graphNetGraph = new Graph();
-		simpleDS tempDS = new simpleDS();
+		
+		//simpleDS tempDS = new simpleDS();
+		peerName = "Hyperion";
+		graphNetGraph.addPeer(peerName);
+		
+		
+
+		
+		
+	//	Thread GraphThread = new Thread(new MagicThreading(graphNetGraph,peerName,GraphQueue,FilterIndexQueue,this));
+	//	Thread FilterThread = new Thread(new FilterThreading(filt,graphNetGraph,peerName,FilterIndexQueue,indexPriorityQueue, tempStoreIntoFile,this));
+	//	GraphThread.start();
+	//	FilterThread.start();
 		int crawlerCount = 0;
-		while ((crawlerCount < count) || (crawler.getUrlQueue().size() == 0)) { // test
-																				// for
-																				// only
-																				// two
-																				// nodes
-																				// in
-																				// this
-																				// case,
-																				// change
-																				// it
-																				// to
-																				// "> 0"
-																				// for
-																				// full
-																				// search
+		while ((crawlerCount < count) || (crawler.getUrlQueue().size() == 0)) { 
 			crawler.startCrawling();
-			tempDS = crawler.getCurrentDS();
+			simpleDS tempDS = crawler.getCurrentDS();
 			if (tempDS == null)
 				break;
-			graphNetGraph.addNode(tempDS);
+			DoFilterStuff(graphNetGraph.addNode(tempDS));
 			crawlerCount++;
 		}
+		
+	//	while(GraphQueue.size() != 0 || FilterIndexQueue.size() != 0);
+		
+		
 		System.out.println("number of websites to grab in queue: "
 				+ crawler.getUrlQueue().size());
 
-		int nextIndex = 0; // not -1 for initialization
-		PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
-		int graphSize = graphNetGraph.getIndexSize();
+//		int nextIndex = 0; // not -1 for initialization
 
-		// TODO: didn't use peerName here
-		// TODO: didn't use getNextNodeToIndex() here, add another
-		// getIndexSize() in graph.java to test here
-		StoreIntoFile tempStoreIntoFile = new StoreIntoFile();
+
+		
+	/*	
 		while (nextIndex <= graphSize) {
 			filt.parse(graphNetGraph.Map.get(nextIndex).getText());
 			filt.storeInOrder();
@@ -152,6 +208,8 @@ public class GUI {
 			}
 			nextIndex++;
 		}
+		*/
+		
 		ObjectOutputStream outStream = new ObjectOutputStream(
 				new FileOutputStream("DS.txt"));
 		outStream.writeObject(tempStoreIntoFile);

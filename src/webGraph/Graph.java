@@ -187,7 +187,7 @@ public int getNextNodeToIndex(String peerName){
 		QueueToSearch.add(currentIndex);
 		return currentIndex;				
 	}
-	public void addNode(simpleDS newDS){
+	public int addNode(simpleDS newDS){
 		int index = addNode(newDS.getPageURL(), newDS.getPageTitle());
 		Map.get(index).setText(newDS.getRawText());
 		if (newDS.getLinksList() != null) {
@@ -195,6 +195,7 @@ public int getNextNodeToIndex(String peerName){
 				addLink(index, newDS.getLinksList().get(jj));		
 			}
 		}
+		return index;
 	}
 	
 	/** findNodeURL
