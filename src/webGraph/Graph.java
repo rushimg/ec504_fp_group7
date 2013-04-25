@@ -7,22 +7,34 @@ import java.util.Stack;
 import basicWebCrawler.simpleDS;
 
 //import stringMatcher.FullFunctionMatching;
-//import customJavaFunctionality.Pair;
-import customJavaFunctionality.Triple;
+import customJavaFunctionality.Pair;
+//import customJavaFunctionality.Triple;
 
 //This is where the magic happens
 public class Graph implements Serializable{
+	/**
+	 * 
+	 */
+//	private static final long serialVersionUID = -1415902249156675166L;
+	/**
+	 * 
+	 */
+//	private static final long serialVersionUID = 1L;
 	public ArrayList<URLnode> Map;		//web map
 	private int currentIndex;	//index of the last added node
 	//private FullFunctionMatching strmat;
 	private HashMap<String,Integer> URLMap;		//maps a URL to an index - used for fast searching
 	private HashMap<String,Integer> NameMap;	//maps a Name to an index - used for fast searching
-	private ArrayList<Triple> PeerList;		//Links a peer to a sector
+	private ArrayList<Pair> PeerList;		//Links a peer to a sector
 	
-	private double LOWERBOUND = 0.80;	//minimum percentage per sector
-	private double UPPERBOUND = 1.20;	//maximum percentage per sector	
-	private ArrayList<Integer> NodesPerPeer;
-	private int max_depth;
+	//private double LOWERBOUND = 0.80;	//minimum percentage per sector
+	//private double UPPERBOUND = 1.20;	//maximum percentage per sector	
+	//private ArrayList<Integer> NodesPerPeer;
+	//private int max_depth;
+	
+	private ArrayList<Integer> QueueToSearch;
+	
+
 	
 	/* Graph - constructor
 	 * initializes Graph
@@ -33,8 +45,9 @@ public class Graph implements Serializable{
 		//strmat = new FullFunctionMatching();
 		URLMap = new HashMap<String, Integer>();
 		NameMap = new HashMap<String,Integer>();
-		PeerList = new ArrayList<Triple>();
-		NodesPerPeer = new ArrayList<Integer>();
+		PeerList = new ArrayList<Pair>();
+	//	NodesPerPeer = new ArrayList<Integer>();
+		QueueToSearch = new ArrayList<Integer>();
 	}
 	
 	
@@ -78,224 +91,50 @@ public int getLinksIn(int index){
  * @return next node. If -1 it could mean the peerName has not been found, or that all nodes have been searched
  */
 public int getNextNodeToIndex(String peerName){
-	return sectorSearch(peerName);	
+	return quickSearch(peerName);	
 }
 	
 //endregion interface	
 	
 /***************************SECTOR OPERATIONS********************************************/	
 //region sector
-	
-	/** sectorSeach
-	 * Perform BFS until a node is found, or all nodes have been searched
-	 * 
-	 * @param peerName - name of peer to search index for
-	 * @return index to node to search
+
+
+
+	/** QuickSearch
+	 * Gets the next Node To Process
 	 */
-	public int sectorSearch(String peerName){
+	public int quickSearch(String peerName){
 		int peerIndex = -1;
 		for(int ii = 0; ii < PeerList.size(); ii++){
-			if(PeerList.get(ii).first.equals(peerName)){
+			if(PeerList.get(ii).first.equals(peerName) == true)
 				peerIndex = ii;
-				break;
-			}
 		}
-		
-		if(peerIndex == -1){
-			System.out.println("Peer Name not found!");
-			return -1;			
-		}
-		
-		int sector = PeerList.get(peerIndex).second;
-		Stack<Integer> ToSearch = new Stack<Integer>();
-		for(int ii = 0; ii < PeerList.get(peerIndex).third.size(); ii++){
-			ToSearch.push(PeerList.get(peerIndex).third.get(ii));
-			while(ToSearch.size() > 0){
-				int index = ToSearch.pop();
-				if(Map.get(index).sector == sector){
-					if(Map.get(index).getIndexed() == false){
-						//Check among other peers if possible?
-						Map.get(index).setIndexed(true);
-						return index;						
-					}
-					else{
-						for(int jj = 0; jj < Map.get(index).LinksTo.size(); jj++)
-							ToSearch.push(Map.get(index).LinksTo.get(jj));
-					}
-				}
-			}
-		}
-		return -1;	//no nodes found, all nodes searched
-	}
-	
-	/** setDepth
-	 * sets the depth of the nodes - where depth is the sum of the depths of nodes that have not been seen yet + 1
-	 * 
-	 * @param index - index to node
-	 */
-	public void setDepth(int index){
-		Map.get(index).seen = true;
-		for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++){
-			int link = Map.get(index).LinksTo.get(ii);
-			if(link != index){	//webpages have been known to be silly
-				if(Map.get(link).seen == false){
-					Map.get(link).seen = true;
-					setDepth(link);
-				}
-				
-			}
-		}
-		int depth = 1;
-		for(int ii = 0; ii < Map.get(index).LinksTo.size();ii++){
-			int link = Map.get(index).LinksTo.get(ii);
-			if(link != index){
-				if(Map.get(link).searched == false){
-					depth += Map.get(link).depth;
-					Map.get(link).searched = true;
-				}					
-			}
-		}
-		Map.get(index).depth = depth;		
-	}
-	
-	
-	/** resector
-	 *  redistributes sectors among nodes based on number of peers
-	 */
-	//start at children of the root
-	public void resector(){
-		for(int ii = 0; ii < Map.size(); ii++){
-			Map.get(ii).searched = false;
-			Map.get(ii).seen = false;
-		}
-		if(Map.size() > 0){
-			int peers = PeerList.size();
-			int LinksPerPeer = Map.get(0).depth/peers;
-			int max = (int)Math.ceil(LinksPerPeer*UPPERBOUND);
-			int min = (int)Math.ceil(LinksPerPeer*LOWERBOUND);
-			NodesPerPeer.clear();
-			for(int ii = 0; ii < peers; ii++){
-				NodesPerPeer.add(0);
-				PeerList.get(ii).second = ii;
-			}
-			calcMaxDepth(max);
-			sectorUp(0,LinksPerPeer,max,min);
+		if(peerIndex == -1)
+			System.out.println("Error! PeerName not found!");
 			
-		}
-	}
-	
-
-	/** sectorUp
-	 * 
-	 * @param index - index to current node
-	 * @param optimal - optimal depth/peer
-	 * @param max - max possible depth/peer
-	 * @param min - min possible depth/peer
-	 */
-	private void sectorUp(int index, int optimal, int max, int min){
-		Map.get(index).seen = true;
-		if(Map.get(index).depth > max_depth){
-			for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++)
-				sectorUp(Map.get(index).LinksTo.get(ii), optimal,max, min);
-			AddToBestSector(index, max);		
-		}
-		else{
-			int sector = findBestSector(Map.get(index).depth, max);
-			PeerList.get(sector).third.add(index);
-			setSector(index,sector);
-			calcMaxDepth(max);
 			
+		int index = -1;
+		if(QueueToSearch.size() !=  0){
+			peerIndex = QueueToSearch.get(0);
+			QueueToSearch.remove(0);		
 		}
-	}
-	
-	
-	/** setSector
-	 * DFS to set the sector
-	 * 
-	 * @param index - index of node
-	 * @param sector - sector of node
-	 */
-	private void setSector(int index, int sector){
-		Map.get(index).seen = true;
-		Map.get(index).sector = sector;
-		NodesPerPeer.set(sector,NodesPerPeer.get(sector) + 1);
-		for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++){
-			int newIndex = Map.get(index).LinksTo.get(ii);
-			if(Map.get(newIndex).seen == false)
-				setSector(newIndex, sector);
-		}	
-	}
-	
-	
-	/** findBestSector
-	 * gets the best fit for the input
-	 * 
-	 * @param depth - depth of input
-	 * @param max - max size for a peer
-	 * @return - sector
-	 */
-	private int findBestSector(int depth, int max){
-		int bestFit = max+10;
-		int bestFitIndex = -1;
-		for(int ii = 0; ii < NodesPerPeer.size(); ii++){
-			int val = max - (NodesPerPeer.get(ii) + depth);
-			if(bestFit > val && val >= 0){
-				bestFit = val;
-				bestFitIndex = ii;
-			}
-		}
-		
-		return bestFitIndex;		
-	}
-	
-	
-	/** AddToBestSector
-	 * sets the sector of the node to be part of the sector that has the fewest members
-	 * 
-	 * @param index - index to node
-	 * @param max - max size of a Peer
-	 */
-	private void AddToBestSector(int index, int max){
-		boolean found = false;
-		int min_index = 0;
-		int min_value = max;
-		for(int ii = 0; ii < NodesPerPeer.size(); ii++){
-			int val = NodesPerPeer.get(ii);
-			if(min_value > val && val + 1 <= max && val != 0){
-				min_value = val;
-				min_index = ii;
-				found = true;
-			}
-		}
-		if(found == false){
-			for(int ii = 0; ii < NodesPerPeer.size();ii++){
-				if(NodesPerPeer.get(ii) == 0){
-					min_index = ii;
-					min_value = 0;
+		else{	
+			int pastIndex = PeerList.get(peerIndex).second;
+			pastIndex += PeerList.size();
+			while(pastIndex < Map.size()){
+				if(pastIndex < Map.size() && Map.get(pastIndex).getIndexed() == false){
+					index = pastIndex;
+					PeerList.get(peerIndex).second = index;
 					break;
 				}
+				else
+					pastIndex += PeerList.size();
 			}
-		}		
-		NodesPerPeer.set(min_index, min_value + 1);
-		Map.get(index).sector = min_index;
-		PeerList.get(min_index).third.add(index);	
-		calcMaxDepth(max);
+		}
+		return index;
 	}
 	
-	
-	/** calcMaxDepth
-	 * calculates the maximum depth that can be sustained by any Peer
-	 * 
-	 * @param - max size of Peer
-	 */
-	private void calcMaxDepth(int max){
-		int maxDepth = 0;
-		for(int ii = 0; ii < NodesPerPeer.size(); ii++)
-			if(maxDepth < (max - NodesPerPeer.get(ii)))
-				maxDepth = (max - NodesPerPeer.get(ii));
-		max_depth = maxDepth;		
-	}
-
 	
 //endregion sector	
 	
@@ -320,6 +159,7 @@ public int getNextNodeToIndex(String peerName){
 			int index = URLMap.get(URL);
 			Map.get(index).setPageName(pageName);
 			NameMap.put(pageName, index);
+			QueueToSearch.add(index);
 			return index;
 		}
 		else{
@@ -330,10 +170,11 @@ public int getNextNodeToIndex(String peerName){
 			Map.add(tempNode);
 			URLMap.put(URL, currentIndex);
 			NameMap.put(pageName, currentIndex);
+			QueueToSearch.add(currentIndex);
 			return currentIndex;
 		}
+		
 	}
-	//region shut up
 	public int addNode(String URL, String pageName, int HTMLindex){
 		currentIndex++;
 		URLnode tempNode = new URLnode(currentIndex);
@@ -343,6 +184,7 @@ public int getNextNodeToIndex(String peerName){
 		Map.add(tempNode);
 		URLMap.put(URL, currentIndex);
 		NameMap.put(pageName, currentIndex);
+		QueueToSearch.add(currentIndex);
 		return currentIndex;				
 	}
 	public void addNode(simpleDS newDS){
@@ -543,7 +385,7 @@ public int getNextNodeToIndex(String peerName){
 	 * @param PeerName - name of the peer. Should be epic.
 	 */
 	public void addPeer(String PeerName){
-		Triple newPeer = new Triple(PeerName,PeerList.size());
+		Pair newPeer = new Pair(PeerName,PeerList.size());
 		PeerList.add(newPeer);		
 	}
 	
@@ -561,6 +403,228 @@ public int getNextNodeToIndex(String peerName){
 
 /***************************DEPRECATED***************************************************/	
 //region deprecated
+	
+
+	/** sectorSeach
+	 * Perform BFS until a node is found, or all nodes have been searched
+	 * 
+	 * @param peerName - name of peer to search index for
+	 * @return index to node to search
+	 */
+	/*		Deprecated in favor of quicksearch
+	public int sectorSearch(String peerName){
+		int peerIndex = -1;
+		for(int ii = 0; ii < PeerList.size(); ii++){
+			if(PeerList.get(ii).first.equals(peerName)){
+				peerIndex = ii;
+				break;
+			}
+		}
+		
+		if(peerIndex == -1){
+			System.out.println("Peer Name not found!");
+			return -1;			
+		}
+		
+		int sector = PeerList.get(peerIndex).second;
+		Stack<Integer> ToSearch = new Stack<Integer>();
+		for(int ii = 0; ii < PeerList.get(peerIndex).third.size(); ii++){
+			ToSearch.push(PeerList.get(peerIndex).third.get(ii));
+			while(ToSearch.size() > 0){
+				int index = ToSearch.pop();
+				if(Map.get(index).sector == sector){
+					if(Map.get(index).getIndexed() == false){
+						//Check among other peers if possible?
+						Map.get(index).setIndexed(true);
+						return index;						
+					}
+					else{
+						for(int jj = 0; jj < Map.get(index).LinksTo.size(); jj++)
+							ToSearch.push(Map.get(index).LinksTo.get(jj));
+					}
+				}
+			}
+		}
+		return -1;	//no nodes found, all nodes searched
+	}
+	*/
+	
+	/** setDepth
+	 * sets the depth of the nodes - where depth is the sum of the depths of nodes that have not been seen yet + 1
+	 * 
+	 * @param index - index to node
+	 */
+	/*		Deprecated in favot of quickSearch
+	public void setDepth(int index){
+		Map.get(index).seen = true;
+		for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++){
+			int link = Map.get(index).LinksTo.get(ii);
+			if(link != index){	//webpages have been known to be silly
+				if(Map.get(link).seen == false){
+					Map.get(link).seen = true;
+					setDepth(link);
+				}
+				
+			}
+		}
+		int depth = 1;
+		for(int ii = 0; ii < Map.get(index).LinksTo.size();ii++){
+			int link = Map.get(index).LinksTo.get(ii);
+			if(link != index){
+				if(Map.get(link).searched == false){
+					depth += Map.get(link).depth;
+					Map.get(link).searched = true;
+				}					
+			}
+		}
+		Map.get(index).depth = depth;		
+	}
+	*/
+	
+	/** resector
+	 *  redistributes sectors among nodes based on number of peers
+	 */
+	//start at children of the root
+	/* Deprecated in favor of quicksearch
+	public void resector(){
+		for(int ii = 0; ii < Map.size(); ii++){
+			Map.get(ii).searched = false;
+			Map.get(ii).seen = false;
+		}
+		if(Map.size() > 0){
+			int peers = PeerList.size();
+			int LinksPerPeer = Map.get(0).depth/peers;
+			int max = (int)Math.ceil(LinksPerPeer*UPPERBOUND);
+			int min = (int)Math.ceil(LinksPerPeer*LOWERBOUND);
+			NodesPerPeer.clear();
+			for(int ii = 0; ii < peers; ii++){
+				NodesPerPeer.add(0);
+				PeerList.get(ii).second = ii;
+			}
+			calcMaxDepth(max);
+			sectorUp(0,LinksPerPeer,max,min);
+			
+		}
+	}
+	*/
+	
+
+	/** sectorUp
+	 * 
+	 * @param index - index to current node
+	 * @param optimal - optimal depth/peer
+	 * @param max - max possible depth/peer
+	 * @param min - min possible depth/peer
+	 */
+	/*Deprecated in favor of quicksearch
+	private void sectorUp(int index, int optimal, int max, int min){
+		Map.get(index).seen = true;
+		if(Map.get(index).depth > max_depth){
+			for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++)
+				sectorUp(Map.get(index).LinksTo.get(ii), optimal,max, min);
+			AddToBestSector(index, max);		
+		}
+		else{
+			int sector = findBestSector(Map.get(index).depth, max);
+			PeerList.get(sector).third.add(index);
+			setSector(index,sector);
+			calcMaxDepth(max);
+			
+		}
+	}
+	*/ 
+	
+	/*All mad deprecated
+	/** setSector
+	 * DFS to set the sector
+	 * 
+	 * @param index - index of node
+	 * @param sector - sector of node
+	 *//*
+	private void setSector(int index, int sector){
+		Map.get(index).seen = true;
+		Map.get(index).sector = sector;
+		NodesPerPeer.set(sector,NodesPerPeer.get(sector) + 1);
+		for(int ii = 0; ii < Map.get(index).LinksTo.size(); ii++){
+			int newIndex = Map.get(index).LinksTo.get(ii);
+			if(Map.get(newIndex).seen == false)
+				setSector(newIndex, sector);
+		}	
+	}
+	*/
+	
+	/** findBestSector
+	 * gets the best fit for the input
+	 * 
+	 * @param depth - depth of input
+	 * @param max - max size for a peer
+	 * @return - sector
+	 *//*
+	private int findBestSector(int depth, int max){
+		int bestFit = max+10;
+		int bestFitIndex = -1;
+		for(int ii = 0; ii < NodesPerPeer.size(); ii++){
+			int val = max - (NodesPerPeer.get(ii) + depth);
+			if(bestFit > val && val >= 0){
+				bestFit = val;
+				bestFitIndex = ii;
+			}
+		}
+		
+		return bestFitIndex;		
+	}*/
+	
+	
+	/** AddToBestSector
+	 * sets the sector of the node to be part of the sector that has the fewest members
+	 * 
+	 * @param index - index to node
+	 * @param max - max size of a Peer
+	 *//*
+	private void AddToBestSector(int index, int max){
+		boolean found = false;
+		int min_index = 0;
+		int min_value = max;
+		for(int ii = 0; ii < NodesPerPeer.size(); ii++){
+			int val = NodesPerPeer.get(ii);
+			if(min_value > val && val + 1 <= max && val != 0){
+				min_value = val;
+				min_index = ii;
+				found = true;
+			}
+		}
+		if(found == false){
+			for(int ii = 0; ii < NodesPerPeer.size();ii++){
+				if(NodesPerPeer.get(ii) == 0){
+					min_index = ii;
+					min_value = 0;
+					break;
+				}
+			}
+		}		
+		NodesPerPeer.set(min_index, min_value + 1);
+		Map.get(index).sector = min_index;
+		PeerList.get(min_index).third.add(index);	
+		calcMaxDepth(max);
+	}*/
+	
+	
+	/** calcMaxDepth
+	 * calculates the maximum depth that can be sustained by any Peer
+	 * 
+	 * @param - max size of Peer
+	 */
+	/*
+	private void calcMaxDepth(int max){
+		int maxDepth = 0;
+		for(int ii = 0; ii < NodesPerPeer.size(); ii++)
+			if(maxDepth < (max - NodesPerPeer.get(ii)))
+				maxDepth = (max - NodesPerPeer.get(ii));
+		max_depth = maxDepth;		
+	}
+
+	*/
+	
 	/** treeSearch - Deprecated
 	 * searches the graph based on given parameters
 	 * NOTE:: This is an expensive operation. It should be used as infrequently as possible
