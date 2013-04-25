@@ -42,6 +42,9 @@ public class GUI{
 	private static StoreAndSearch indexDS = new StoreAndSearch();
 	private static GUI gui = new GUI();
 	private static ArrayList<Integer> resultList = new ArrayList<Integer>();
+	private static Display display;
+	private static Shell shell;
+	private static Label pageLabel;
 	
 	/**
 	 * Launch the application.
@@ -53,7 +56,7 @@ public class GUI{
 			crawler.setPrintOutput(true);
 			simpleDS tempDS = new simpleDS();
 			int crawlerCount = 0;
-			while ((crawlerCount < 4) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
+			while ((crawlerCount < 100) || (crawler.getUrlQueue().size() == 0)) {		//test for only two nodes in this case, change it to "> 0" for full search
 				crawler.startCrawling();
 				tempDS = crawler.getCurrentDS();
 				if (tempDS == null) 
@@ -98,19 +101,42 @@ public class GUI{
 		}
 	}
 	
-	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() == buttonsArray[2])
-			System.out.println("right");
+	//update result according to current page number
+	public void updatePage() {
+		int beginIndex = (pageNumber - 1) * 6;
+		int endIndex = beginIndex + 5;
+		for (int i = beginIndex; i <= endIndex; i++) {
+			if (i < resultList.size()) {
+				URLnode tempNode = net.Map.get(resultList.get(i));
+				StyleRange titleStyleRange = new StyleRange();
+				titleStyleRange.start = 0;
+				titleStyleRange.length = tempNode.getPageName().length();
+				titleStyleRange.font = new Font(display, "Arial", 9, SWT.BOLD);
+				titleStyleRange.underline = true;
+				int styleTextIndex = i - beginIndex;  //index of component styleText;
+				styledTextArray[styleTextIndex].setText(tempNode.getPageName() + "\n" + tempNode.getPageURL() + "\n");
+				StyleRange urlStyleRange = new StyleRange();
+				urlStyleRange.start = tempNode.getPageName().length();
+				urlStyleRange.length = tempNode.getPageURL().length();
+				urlStyleRange.font = new Font(display, "Arial", 8, SWT.ITALIC);
+				StyleRange[] allStyleRanges = new StyleRange[2];
+				allStyleRanges[0] = titleStyleRange;
+				allStyleRanges[1] = urlStyleRange;
+				styledTextArray[styleTextIndex].setStyleRanges(allStyleRanges);
+			}
+			else {
+				int styleTextIndex = i - beginIndex;  //index of component styleText;
+				styledTextArray[styleTextIndex].setText("");
+			}
+		}
 	}
-	
-	public void widgetDefaultSelected(SelectionEvent e) {}
 
 	/**
 	 * Open the window.
 	 */
 	public void open() {
-		final Display display = Display.getDefault();
-		final Shell shell = new Shell(display, SWT.MIN);
+		display = Display.getDefault();
+		shell = new Shell(display, SWT.MIN);
 		shell.setModified(true);
 		shell.setSize(1300, 700);
 		shell.setText("EC504_Group7_P2P");
@@ -153,30 +179,19 @@ public class GUI{
 					}
 					return;
 				}
+				pageNumber = 1;
+				pageLabel.setText(String.valueOf(pageNumber));
 				resultCount = resultList.size();
+				if (resultCount % 6 == 0) {
+					maxPageNumber = resultCount / 6;
+				} else {
+					maxPageNumber = resultCount / 6 + 1;
+				}
 				resultCountLabel.setText(" " + resultCount + " found");
 				for (StyledText st: styledTextArray) {
 					st.setText("");
 				}
-				for (int i = 0; i < 6; i++) {
-					if (i < resultList.size()) {
-						URLnode tempNode = net.Map.get(resultList.get(i));
-						StyleRange titleStyleRange = new StyleRange();
-						titleStyleRange.start = 0;
-						titleStyleRange.length = tempNode.getPageName().length();
-						titleStyleRange.font = new Font(display, "Arial", 9, SWT.BOLD);
-						titleStyleRange.underline = true;
-						styledTextArray[i].setText(tempNode.getPageName() + "\n" + tempNode.getPageURL() + "\n");
-						StyleRange urlStyleRange = new StyleRange();
-						urlStyleRange.start = tempNode.getPageName().length();
-						urlStyleRange.length = tempNode.getPageURL().length();
-						urlStyleRange.font = new Font(display, "Arial", 8, SWT.ITALIC);
-						StyleRange[] allStyleRanges = new StyleRange[2];
-						allStyleRanges[0] = titleStyleRange;
-						allStyleRanges[1] = urlStyleRange;
-						styledTextArray[i].setStyleRanges(allStyleRanges);
-					}
-				}
+				updatePage();
 			}
 		});
 		searchButton.setBounds(5, 42, 91, 31);
@@ -306,17 +321,37 @@ public class GUI{
 		resultCountLabel.setText(" " + resultCount + " found");
 		resultCountLabel.setFont(new Font(display, "Arial", 14, SWT.NORMAL));
 		
-		Label pageLabel = new Label(composite, SWT.CENTER);
+		pageLabel = new Label(composite, SWT.CENTER);
 		pageLabel.setBounds(102, 620, 45, 20);
 		pageLabel.setFont(new Font(display, "Arial", 12, SWT.BOLD));
 		pageLabel.setText(String.valueOf(pageNumber));
 		
 		Button leftPageButton = new Button(composite, SWT.CENTER);
+		leftPageButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (pageNumber > 1) {
+					pageNumber--;
+					pageLabel.setText(String.valueOf(pageNumber));
+					updatePage();
+				}
+			}
+		});
 		leftPageButton.setBounds(51, 617, 45, 25);
 		leftPageButton.setText("<");
 		leftPageButton.setFont(new Font(display, "Arial Unicode", 12, SWT.NORMAL));
 		
 		Button rightPageButton = new Button(composite, SWT.CENTER);
+		rightPageButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (pageNumber < maxPageNumber) {
+					pageNumber++;
+					pageLabel.setText(String.valueOf(pageNumber));
+					updatePage();
+				}
+			}
+		});
 		rightPageButton.setText(">");
 		rightPageButton.setBounds(153, 617, 45, 25);
 		rightPageButton.setFont(new Font(display, "Arial Unicode", 12, SWT.NORMAL));
