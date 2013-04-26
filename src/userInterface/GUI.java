@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.PriorityQueue;
 import javax.swing.text.BadLocationException;
-
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -32,7 +31,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import webGraph.Graph;
 import webGraph.URLnode;
-import basicWebCrawler.CrawlerThreading;
 import dataStruct.IndexStruct;
 import dataStruct.StoreAndSearch;
 import dataStruct.StoreIntoFile;
@@ -42,7 +40,6 @@ import htmlFilter.Filter;
 import htmlFilter.Filter.Index;
 import org.eclipse.swt.widgets.Label;
 
-import com.sun.java.swing.plaf.windows.resources.windows;
 
 public class GUI {
 	//region vars
@@ -68,6 +65,9 @@ public class GUI {
 	public ArrayList<simpleDS> GraphQueue = new ArrayList<simpleDS>();
 	public ArrayList<Integer> FilterIndexQueue = new ArrayList<Integer>();
 	private Graph graphNetGraph = new Graph();
+	private String addressToConnect = "";
+	private int portToConnect = 0;
+	private boolean firstPeer = false;
 	PriorityQueue<Index> indexPriorityQueue = new PriorityQueue<Index>();
 	int graphSize = graphNetGraph.getIndexSize();
 	StoreIntoFile tempStoreIntoFile = new StoreIntoFile();
@@ -300,6 +300,34 @@ public class GUI {
 		shell.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
 		shell.setImage(new Image(display, "icon.ico"));
 
+		InputDialog initialDialog = new InputDialog(shell, "Join Network", "If you are the first peer, click \"cancel\", " +
+				"otherwise Input the IP address and port to connect: ", "127.0.0.1:8080", null);
+		if (initialDialog.open() == org.eclipse.jface.window.Window.CANCEL) {
+			firstPeer = true;
+		}
+		else if (initialDialog.open() == org.eclipse.jface.window.Window.OK) {
+			String initialString = "";
+			initialString = initialDialog.getValue();
+			int parseIndex = initialString.indexOf(':');
+			if (parseIndex == -1) {
+				MessageDialog.openInformation(shell, "wrong format", "please input in this format : \"address:port\"" +
+						" like \"127.0.0.1:8080\"");
+				return;
+			}
+			String tempAddress = initialString.substring(0, parseIndex);
+			int tempPort = 0;
+			try {
+				tempPort = Integer.valueOf(initialString.substring(parseIndex + 1));
+			} catch (NumberFormatException e) {
+				MessageDialog.openInformation(shell, "wrong format", "please input in this format : \"address:port\"" +
+						" like \"127.0.0.1:8080\"");
+				return;
+			}
+			addressToConnect = tempAddress;
+			portToConnect = tempPort;
+			System.out.println("address to connect: " + addressToConnect + "; port to connect: " + portToConnect);
+		}
+		
 		final Browser browser = new Browser(shell, SWT.BORDER);
 		browser.setBounds(262, 10, 1025, 672);
 		browser.setUrl("http://www.bu.edu");
