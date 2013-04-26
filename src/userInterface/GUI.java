@@ -174,13 +174,13 @@ public class GUI {
 			crawlerCount++;
 		}
 		
-	//	while(GraphQueue.size() != 0 || FilterIndexQueue.size() != 0);
+
 		
 		
 		System.out.println("number of websites to grab in queue: "
 				+ crawler.getUrlQueue().size());
 
-//		int nextIndex = 0; // not -1 for initialization
+
 
 
 		
