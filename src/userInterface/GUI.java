@@ -39,6 +39,8 @@ import basicWebCrawler.simpleDS;
 import htmlFilter.Filter;
 import htmlFilter.Filter.Index;
 import org.eclipse.swt.widgets.Label;
+import p2p.PeerToPeer;
+import p2p.PeerListner;
 
 
 public class GUI {
@@ -88,6 +90,7 @@ public class GUI {
 		// TODO: parse input text with "AND" and "OR" and their implementation
 		// for sending different request and combining result
 		//crawlWebsites(50);
+		
 	}
 
 	/**
@@ -149,6 +152,7 @@ public class GUI {
 	}
 	
 	public void crawlWebsites(int count) throws IOException, BadLocationException {
+	//	Thread t = new Thread(new PeerListner(this));
 		Crawler crawler = new Crawler();
 		crawler.setPrintOutput(true);
 		
@@ -300,7 +304,7 @@ public class GUI {
 		shell.setBackground(display.getSystemColor(SWT.COLOR_DARK_BLUE));
 		shell.setImage(new Image(display, "icon.ico"));
 
-		InputDialog initialDialog = new InputDialog(shell, "Join Network", "If you are the first peer, click \"cancel\", " +
+		/*	InputDialog initialDialog = new InputDialog(shell, "Join Network", "If you are the first peer, click \"cancel\", " +
 				"otherwise Input the IP address and port to connect: ", "127.0.0.1:8080", null);
 		if (initialDialog.open() == org.eclipse.jface.window.Window.CANCEL) {
 			firstPeer = true;
@@ -326,7 +330,8 @@ public class GUI {
 			addressToConnect = tempAddress;
 			portToConnect = tempPort;
 			System.out.println("address to connect: " + addressToConnect + "; port to connect: " + portToConnect);
-		}
+			PeerToPeer.intialize(addressToConnect);
+		}*/
 		
 		final Browser browser = new Browser(shell, SWT.BORDER);
 		browser.setBounds(262, 10, 1025, 672);

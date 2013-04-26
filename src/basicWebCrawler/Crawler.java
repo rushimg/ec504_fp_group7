@@ -17,6 +17,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import p2p.PeerToPeer;
 import javax.swing.text.html.parser.ParserDelegator;
 
 public class Crawler {
@@ -27,12 +28,28 @@ public class Crawler {
     private final String rootURL = "http://www.bu.edu";
     private boolean printOutput = false;
     private simpleDS currentDS = new simpleDS();
+    public int peerNums;
+    private int peerCode;
+    
+    public void incPeerNums(){
+    	peerNums++;
+    }
+    
+    public void decPeerNums(){
+    	peerNums--;
+    }
+    
+    public void addToURLQueue(String newUrl){
+    	urlQueue.enque(newUrl);
+    }
     
 	//constructor 
 	public Crawler(){
 		//TODO: serious cleanup, what vars passed around?
 		//TODO: return ArrayList of simpleDS with all data
 		//TODO: what counts as bu.edu domain? people.bu.edu?
+		this.peerNums = 0;
+		this.peerCode = 0;
 		
 		urlQueue.enque(rootURL);
 	}
@@ -126,7 +143,10 @@ public class Crawler {
             	  if (srcString.contains("bu.edu")){
             		  srcString = this.checkLink(srcString, currentUrl);
             		  links.add(srcString);
-            		  urlQueue.enque(srcString); // add links to the pages that need to be crawled.
+            		//  if(checkUrl(srcString))
+            			  urlQueue.enque(srcString); // add links to the pages that need to be crawled.
+            		//  else
+            		//	  PeerToPeer.sendCrawlerURL(srcString);
             	  }
               }
 		    }
@@ -139,6 +159,13 @@ public class Crawler {
 			return base + link;
 		}
 		return link;
+	}
+	
+	public boolean checkUrl(String url){
+		if ((url.hashCode() % peerNums) == peerCode){
+			return true;
+		}
+		else return false;
 	}
 	
 	public void setPrintOutput(boolean tf){

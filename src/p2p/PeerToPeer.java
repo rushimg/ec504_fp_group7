@@ -22,7 +22,7 @@ public class PeerToPeer {
     private int numPeers;
     private ArrayList<String> peerUrls;
 
-    public static void main(String[] args) throws Exception {
+   /* public static void main(String[] args) throws Exception {
         InetAddress IP = InetAddress.getLocalHost();
         System.out.println("IP of my system is := " + IP.getHostAddress());
         getGraph();
@@ -32,11 +32,23 @@ public class PeerToPeer {
         graphNetGraph.addNode("HElLo", "By");
         sendGraph("128.197.127.66", graphNetGraph,1774);
     }
-    
-    public static Graph intialize(String destinationIP) throws IOException{
-        InetAddress IP = InetAddress.getLocalHost();
-        String ip = IP.getHostAddress();
-        requestGraph(destinationIP, 1774);
+    */
+    public static Graph intialize(String destinationIP){
+        InetAddress IP;
+		try {
+			IP = InetAddress.getLocalHost();
+	        String ip = IP.getHostAddress();
+
+				try {
+					requestGraph(destinationIP, 1774,ip);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         try {
             return getGraph();
         } catch (Exception e) {
@@ -45,7 +57,7 @@ public class PeerToPeer {
         return null;    
     }
     
-    public static void requestGraph(String ipAddress,int portNumber) throws IOException{
+    public static void requestGraph(String ipAddress,int portNumber, String myIp) throws IOException{
         Socket socket1;
 
         socket1 = new Socket(ipAddress, portNumber);
@@ -55,7 +67,7 @@ public class PeerToPeer {
         ObjectOutputStream outStream1 = new ObjectOutputStream(
                 socket1.getOutputStream());
 
-        outStream1.writeObject(true);
+        outStream1.writeObject(myIp);
 
         br.close();
         pw.close();
